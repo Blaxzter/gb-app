@@ -1,5 +1,5 @@
 {
-  "name": "GesangbuchApp",
+  "name": "gesangbuchapp",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -7,11 +7,26 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
+    "bundle?": "react-native bundle",
     "test": "jest"
   },
   "dependencies": {
+    "@directus/sdk": "^15.0.2",
+    "@react-navigation/native": "^6.1.15",
+
+
+
+    "@react-navigation/native-stack": "^6.9.23",
+    "@reduxjs/toolkit": "^2.2.1",
     "react": "18.2.0",
-    "react-native": "0.73.5"
+    "react-native": "0.73.5",
+    "react-native-paper": "^5.12.3",
+    "react-native-safe-area-context": "^4.9.0",
+    "react-native-screens": "^3.29.0",
+    "react-native-url-polyfill": "^2.0.0",
+    "react-native-vector-icons": "^10.0.3",
+    "react-redux": "^9.1.0",
+    "redux": "^5.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
