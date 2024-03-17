@@ -1,5 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {Gesangbuchlied} from '../../assets/scripts/modeltypes.tsx';
+import {Gesangbuchlied} from '../../types/modeltypes.ts';
 import fetchGBData from '../queries/thunk.tsx';
 
 // Define a type for the slice state

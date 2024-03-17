@@ -7,19 +7,18 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "bundle?": "react-native bundle",
+    "build-android": "npx react-native@latest build-android --mode=release",
+    "send-to-phone": "yarn android --mode release",
     "test": "jest"
   },
   "dependencies": {
     "@directus/sdk": "^15.0.2",
     "@react-navigation/native": "^6.1.15",
-
-
-
     "@react-navigation/native-stack": "^6.9.23",
     "@reduxjs/toolkit": "^2.2.1",
     "react": "18.2.0",
     "react-native": "0.73.5",
+    "react-native-config": "^1.5.1",
     "react-native-paper": "^5.12.3",
     "react-native-safe-area-context": "^4.9.0",
     "react-native-screens": "^3.29.0",

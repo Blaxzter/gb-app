@@ -1,9 +1,9 @@
 export type GesangbuchliedDB = {
   id: string;
   titel: string;
-  textId: Text;
-  melodieId: Melodie;
-  kategorieId: Kategorie[];
+  textId: TextType;
+  melodieId: MelodieType;
+  kategorieId: KategorieType[];
 };
 
 // create Gesangbuchlied type that extends GesangbuchliedDB and adds fields for filtering
@@ -15,10 +15,10 @@ export type Gesangbuchlied = GesangbuchliedDB & {
 
 export type TextDB = {
   strophenEinzeln: Strophe[];
-  autorId: Autor[];
+  autorId: AutorType[];
 };
 
-export type Text = TextDB & {
+export type TextType = TextDB & {
   authors_string: string;
 };
 
@@ -30,7 +30,7 @@ export type AutorDB = {
   autor_id: AutorDetails;
 };
 
-export type Autor = AutorDB & {
+export type AutorType = AutorDB & {
   name: string;
 };
 
@@ -41,11 +41,11 @@ export type AutorDetails = {
 };
 
 export type MelodieDB = {
-  autorId: Autor[];
+  autorId: AutorType[];
   noten: Noten[];
 };
 
-export type Melodie = MelodieDB & {
+export type MelodieType = MelodieDB & {
   authors_string: string;
 };
 
@@ -58,7 +58,7 @@ export type DirectusFile = {
   id: string;
 };
 
-export type Kategorie = {
+export type KategorieType = {
   kategorie_id: {
     name: string;
   };

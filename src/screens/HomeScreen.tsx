@@ -3,16 +3,26 @@
 import * as React from 'react';
 import {View, StyleSheet, Image} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../navigation/types.tsx';
-import {ActivityIndicator, Button, Text} from 'react-native-paper';
-import {useAppSelector} from '../store/hooks';
+import {RootStackParamList} from '../navigation/types.ts';
+import {ActivityIndicator, Button, Text, Appbar} from 'react-native-paper';
+import {useAppSelector} from '../store/hooks.ts';
 import {useEffect} from 'react';
 import fetchGBData from '../store/queries/thunk.tsx';
-import {useAppDispatch} from '../store/hooks.tsx';
+import {useAppDispatch} from '../store/hooks.ts';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store/store.ts';
+import {darkTheme, lightTheme} from '../assets/styles/themes.ts';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 function HomeScreen({navigation}: Props) {
+  const isDarkTheme = useSelector(
+    (state: RootState) => state.settings.theme === 'dark',
+  );
+  const theme = useSelector((state: RootState) =>
+    state.settings.theme === 'light' ? lightTheme : darkTheme,
+  );
+
   const loading = useAppSelector(state => state.gbData.loading);
   const error = useAppSelector(state => state.gbData.error);
   const data = useAppSelector(state => state.gbData.data);
@@ -25,11 +35,22 @@ function HomeScreen({navigation}: Props) {
 
   return (
     <>
-      <View style={styles.container}>
-        <Image
-          style={styles.logo}
-          source={require('../assets/images/logo.png')}
-        />
+      <Appbar.Header>
+        <Appbar.Content title="Gesangbuchlied" />
+      </Appbar.Header>
+      <View
+        style={{...styles.container, backgroundColor: theme.colors.background}}>
+        {isDarkTheme ? (
+          <Image
+            style={styles.logo}
+            source={require('../assets/images/logo-dark.png')}
+          />
+        ) : (
+          <Image
+            style={styles.logo}
+            source={require('../assets/images/logo-light.png')}
+          />
+        )}
 
         {loading === 'pending' && (
           <View style={styles.pending}>
@@ -46,6 +67,12 @@ function HomeScreen({navigation}: Props) {
             Gesangbuchlieder
           </Button>
         )}
+        <Button
+          mode="outlined"
+          icon={'cog'}
+          onPress={() => navigation.navigate('SettingsScreen')}>
+          Einstellungen
+        </Button>
       </View>
     </>
   );
@@ -54,6 +81,8 @@ function HomeScreen({navigation}: Props) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    flex: 1,
+    gap: 10,
   },
   logo: {
     width: 200,

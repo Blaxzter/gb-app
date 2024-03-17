@@ -1,9 +1,11 @@
 import {configureStore} from '@reduxjs/toolkit';
-import gbDataSlice from './features/songs.tsx';
+import gbDataReducer from './features/songsSlice.ts';
+import settingsReducer from './features/settingsSlice';
 
 const store = configureStore({
   reducer: {
-    gbData: gbDataSlice,
+    gbData: gbDataReducer,
+    settings: settingsReducer,
   },
 });
 
