@@ -23,7 +23,7 @@ const NormalSongScreenComponent = ({lied}: Props) => {
   console.log(firstPng);
   return (
     <View style={styles.container}>
-      <Text variant={'titleLarge'}>{lied.titel}</Text>
+      {/*<Text variant={'titleLarge'}>{lied.titel}</Text>*/}
       {/*{firstPng && (*/}
       {/*  <Image*/}
       {/*    style={styles.image}*/}

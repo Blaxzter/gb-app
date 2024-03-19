@@ -1,15 +1,18 @@
 import React, {useState} from 'react';
 import {Appbar, Searchbar} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
+import FilterSelectionComponent from './FilterSelectionComponent.tsx';
 
 interface SearchComponentProps {
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
+  onCategoriesChange: (query: string) => void;
 }
 
 const SongListSearchAppBar: React.FC<SearchComponentProps> = ({
   searchQuery,
   onSearchQueryChange,
+  onCategoriesChange,
 }) => {
   const navigation = useNavigation();
   const [isSearchActive, setIsSearchActive] = useState<boolean>(false);
@@ -41,7 +44,7 @@ const SongListSearchAppBar: React.FC<SearchComponentProps> = ({
               onSearchQueryChange('');
             }}
           />
-          <Appbar.Action icon="filter" onPress={() => {}} />
+          <FilterSelectionComponent onCategoriesChange={onCategoriesChange} />
         </>
       )}
     </Appbar.Header>

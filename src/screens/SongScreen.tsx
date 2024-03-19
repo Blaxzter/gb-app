@@ -20,7 +20,7 @@ function SongScreen({navigation, route}: Props) {
       style={{...styles.container, backgroundColor: theme.colors.background}}>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        {/*<Appbar.Content title={lied.titel} />*/}
+        <Appbar.Content title={lied.titel} />
       </Appbar.Header>
       <NormalSongScreenComponent lied={lied} />
     </View>

@@ -11,6 +11,7 @@ import SongListSearchAppBar from '../components/songlistcomponents/SongListSearc
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/store.ts';
 import {darkTheme, lightTheme} from '../assets/styles/themes.ts';
+import _ from 'lodash';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SongListScreen'>;
 
@@ -19,19 +20,37 @@ function SongListScreen({navigation}: Props) {
     state.settings.theme === 'light' ? lightTheme : darkTheme,
   );
   const [searchQuery, setSearchQuery] = useState('');
+  // State to hold selected categories
+  const [selectedCategories, setSelectedCategories] = useState<string>('');
+
+  // Callback function to update selected categories
+  const handleCategoriesChange = (newCategories: string) => {
+    setSelectedCategories(newCategories);
+  };
 
   const data = useAppSelector(state => state.gbData.data);
 
   const filterSongs = (lied: Gesangbuchlied) => {
     const lowerCaseSearchQuery = searchQuery.toLowerCase();
-    if (searchQuery === '') {
+    if (selectedCategories === '') {
       return true;
     }
-    return (
-      lied?.titelLowerCase?.includes(lowerCaseSearchQuery) ||
-      lied?.authorStrings?.includes(lowerCaseSearchQuery) ||
-      lied?.kategorieStrings?.includes(lowerCaseSearchQuery)
-    );
+    let category_split = selectedCategories.split(',');
+    const isInSelectedCategories =
+      selectedCategories === ''
+        ? true
+        : _.some(lied.kategorieId, kategorie =>
+            category_split.includes(kategorie.kategorie_id.name?.toLowerCase()),
+          );
+
+    const searchQueryMatch =
+      searchQuery === ''
+        ? true
+        : lied?.titelLowerCase?.includes(lowerCaseSearchQuery) ||
+          lied?.authorStrings?.includes(lowerCaseSearchQuery) ||
+          lied?.kategorieStrings?.includes(lowerCaseSearchQuery);
+
+    return isInSelectedCategories && searchQueryMatch;
   };
 
   const handleSearchQueryChange = (query: string) => {
@@ -44,6 +63,7 @@ function SongListScreen({navigation}: Props) {
       <SongListSearchAppBar
         searchQuery={searchQuery}
         onSearchQueryChange={handleSearchQueryChange}
+        onCategoriesChange={handleCategoriesChange}
       />
       <View>
         {data && (
