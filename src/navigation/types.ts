@@ -5,6 +5,8 @@ type RootStackParamList = {
   SongListScreen: undefined;
   SongScreen: {lied: Gesangbuchlied};
   SettingsScreen: undefined;
+  PlaylistScreen: undefined;
+  PlaylistDetailScreen: {playlistId: string};
 };
 
 export type {RootStackParamList};

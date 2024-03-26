@@ -2,9 +2,10 @@ import React, {useEffect, useState} from 'react';
 import Modal from 'react-native-modal';
 import {Appbar, Portal} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
-import DropDown from 'react-native-paper-dropdown';
 import {useAppSelector} from '../../store/hooks.ts';
 import _ from 'lodash';
+import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
+import DropDown from '../utils/DropDown.tsx';
 
 interface CategoryDropDown {
   label: string;
@@ -16,6 +17,8 @@ type Props = {
 };
 
 const FilterSelectionComponent = ({onCategoriesChange}: Props) => {
+  const theme = useThemeSelection();
+
   const [visible, setModalVisibility] = useState<boolean>(false);
   const [showMultiSelectDropDown, setShowMultiSelectDropDown] = useState(false);
   const [categories, setCategories] = useState<string>('');
@@ -61,7 +64,11 @@ const FilterSelectionComponent = ({onCategoriesChange}: Props) => {
         style={styles.modal}>
         <Portal.Host>
           <View style={styles.modalWrapper}>
-            <View style={styles.view}>
+            <View
+              style={{
+                ...styles.view,
+                backgroundColor: theme.colors.background,
+              }}>
               {/*indicator for touch*/}
               <View style={styles.draggable} />
               <View style={styles.filterContainer}>
@@ -75,6 +82,10 @@ const FilterSelectionComponent = ({onCategoriesChange}: Props) => {
                   setValue={setCategories}
                   list={categoryList}
                   multiSelect
+                  activeColor={theme.colors.primary}
+                  dropDownStyle={{
+                    borderColor: theme.colors.onBackground,
+                  }}
                 />
               </View>
             </View>
@@ -99,7 +110,6 @@ const styles = StyleSheet.create({
   },
   view: {
     flex: 1,
-    backgroundColor: 'white',
     alignSelf: 'flex-end',
     minHeight: '50%',
     borderTopStartRadius: 20,

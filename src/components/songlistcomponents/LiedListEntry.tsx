@@ -4,25 +4,33 @@ import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import CategoryScroller from '../utils/CategoryScroller.tsx';
 import AuthorListComponent from '../utils/AutherListComponent.tsx';
+import CategoryListComponent from '../utils/CategoryListComponent.tsx';
+import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
 
 function LiedListEntry({lied, index}: {lied: Gesangbuchlied; index: number}) {
+  const theme = useThemeSelection();
+
   return (
     <View style={styles.container}>
       <View style={styles.titleRow}>
         <Avatar.Text
           size={24}
           label={(index + 1).toString()}
-          style={styles.number}
+          style={{
+            backgroundColor: theme.colors.secondaryContainer,
+            marginTop: 3,
+          }}
+          labelStyle={{
+            color: theme.colors.onSecondaryContainer,
+          }}
         />
         <Text variant={'titleLarge'} style={styles.title}>
           {lied.titel}
         </Text>
       </View>
       <View style={styles.infos}>
-        <View style={styles.marginBottom}>
-          <CategoryScroller categories={lied.kategorieId} />
-        </View>
         <AuthorListComponent text={lied.textId} melodie={lied.melodieId} />
+        <CategoryListComponent categories={lied.kategorieId} />
       </View>
     </View>
   );
@@ -37,7 +45,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     gap: 10,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: 10,
   },
   title: {
@@ -45,13 +53,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: 'wrap',
   },
-  number: {
-    backgroundColor: 'lightgrey',
-  },
   infos: {
     flex: 1,
     flexDirection: 'column',
     flexWrap: 'nowrap',
+    gap: 5,
   },
   marginBottom: {
     marginBottom: 10,

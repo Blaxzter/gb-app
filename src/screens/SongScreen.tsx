@@ -3,17 +3,13 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/types.ts';
 import {Appbar} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store/store.ts';
-import {darkTheme, lightTheme} from '../assets/styles/themes.ts';
 import NormalSongScreenComponent from '../components/songscreens/NormalSongScreenComponent.tsx';
+import {useThemeSelection} from '../hooks/useThemeSelection.ts';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SongScreen'>;
 
 function SongScreen({navigation, route}: Props) {
-  const theme = useSelector((state: RootState) =>
-    state.settings.theme === 'light' ? lightTheme : darkTheme,
-  );
+  const theme = useThemeSelection();
   const {lied} = route.params;
   return (
     <View

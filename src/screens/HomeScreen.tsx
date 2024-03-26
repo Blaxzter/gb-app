@@ -4,54 +4,67 @@ import * as React from 'react';
 import {View, StyleSheet, Image} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/types.ts';
-import {ActivityIndicator, Button, Text, Appbar} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Button,
+  Divider,
+  Menu,
+  Text,
+} from 'react-native-paper';
 import {useAppSelector} from '../store/hooks.ts';
 import {useEffect} from 'react';
 import fetchGBData from '../store/queries/thunk.tsx';
 import {useAppDispatch} from '../store/hooks.ts';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store/store.ts';
-import {darkTheme, lightTheme} from '../assets/styles/themes.ts';
+import {Gesangbuchlied} from '../types/modeltypes.ts';
+import {useIsDarkTheme, useThemeSelection} from '../hooks/useThemeSelection.ts';
+import AnimatedDrawerMenu from '../components/utils/AnimatedDrawerMenu.tsx';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 function HomeScreen({navigation}: Props) {
-  const isDarkTheme = useSelector(
-    (state: RootState) => state.settings.theme === 'dark',
-  );
-  const theme = useSelector((state: RootState) =>
-    state.settings.theme === 'light' ? lightTheme : darkTheme,
-  );
+  const dispatch = useAppDispatch();
+
+  const theme = useThemeSelection();
+  const isDarkTheme = useIsDarkTheme();
 
   const loading = useAppSelector(state => state.gbData.loading);
   const error = useAppSelector(state => state.gbData.error);
-  const data = useAppSelector(state => state.gbData.data);
-
-  const dispatch = useAppDispatch();
+  const gbSongs: Gesangbuchlied[] = useAppSelector(state => state.gbData.data);
 
   useEffect(() => {
-    dispatch(fetchGBData());
-  }, [dispatch]);
+    if (gbSongs.length === 0) {
+      dispatch(fetchGBData());
+    }
+  }, [dispatch, gbSongs]);
+
+  const [visible, setVisible] = React.useState(false);
+
+  const openMenu = () => setVisible(true);
+
+  const closeMenu = () => setVisible(false);
 
   return (
-    <>
-      <Appbar.Header>
-        <Appbar.Content title="Gesangbuchlied" />
-      </Appbar.Header>
-      <View
-        style={{...styles.container, backgroundColor: theme.colors.background}}>
-        {isDarkTheme ? (
-          <Image
-            style={styles.logo}
-            source={require('../assets/images/logo-dark.png')}
-          />
-        ) : (
-          <Image
-            style={styles.logo}
-            source={require('../assets/images/logo-light.png')}
-          />
-        )}
+    <View
+      style={{
+        ...styles.wrapper,
+        backgroundColor: theme.colors.background,
+      }}>
+      <Text variant={'displayLarge'} style={styles.headerText}>
+        Digitales Gesangbuch
+      </Text>
+      {isDarkTheme ? (
+        <Image
+          style={styles.logo}
+          source={require('../assets/images/logo-dark.png')}
+        />
+      ) : (
+        <Image
+          style={styles.logo}
+          source={require('../assets/images/logo-light.png')}
+        />
+      )}
 
+      <View style={styles.buttons}>
         {loading === 'pending' && (
           <View style={styles.pending}>
             <Text style={styles.loadingText}>Fetching data from server...</Text>
@@ -59,7 +72,7 @@ function HomeScreen({navigation}: Props) {
           </View>
         )}
         {error && <Text>Error: {error}</Text>}
-        {data.length > 0 && (
+        {gbSongs.length > 0 && (
           <Button
             mode="outlined"
             icon={'book-open-variant'}
@@ -69,20 +82,34 @@ function HomeScreen({navigation}: Props) {
         )}
         <Button
           mode="outlined"
+          icon={'playlist-music'}
+          onPress={() => navigation.navigate('PlaylistScreen')}>
+          Liedsammlungen
+        </Button>
+        <Button
+          mode="outlined"
           icon={'cog'}
           onPress={() => navigation.navigate('SettingsScreen')}>
           Einstellungen
         </Button>
       </View>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
     flex: 1,
-    gap: 10,
+  },
+  wrapper: {
+    flex: 1,
+    flexGrow: 1,
+    padding: 20,
+  },
+  headerText: {
+    marginTop: 50,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   logo: {
     width: 200,
@@ -90,9 +117,19 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignSelf: 'center',
   },
+  buttons: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    gap: 10,
+    paddingBottom: 50,
+  },
   pending: {
     marginBottom: 30,
     alignItems: 'center',
+  },
+  spacer: {
+    flex: 1,
+    flexGrow: 1,
   },
   loadingText: {
     marginBottom: 20,

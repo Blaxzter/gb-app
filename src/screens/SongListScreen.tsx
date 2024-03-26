@@ -32,7 +32,7 @@ function SongListScreen({navigation}: Props) {
 
   const filterSongs = (lied: Gesangbuchlied) => {
     const lowerCaseSearchQuery = searchQuery.toLowerCase();
-    if (selectedCategories === '') {
+    if (selectedCategories === '' && searchQuery === '') {
       return true;
     }
     let category_split = selectedCategories.split(',');
@@ -42,6 +42,8 @@ function SongListScreen({navigation}: Props) {
         : _.some(lied.kategorieId, kategorie =>
             category_split.includes(kategorie.kategorie_id.name?.toLowerCase()),
           );
+
+    console.log(lowerCaseSearchQuery);
 
     const searchQueryMatch =
       searchQuery === ''

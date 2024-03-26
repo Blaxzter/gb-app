@@ -32,7 +32,7 @@ function SettingsScreen({navigation}: Props) {
         <Appbar.Content title="Einstellungen" />
       </Appbar.Header>
       <View style={styles.configRow}>
-        <Text variant="bodyMedium">Dark Theme</Text>
+        <Text variant="titleLarge">Dark Theme</Text>
         <Switch value={isDarkTheme} onValueChange={handleThemeChange} />
       </View>
     </View>
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   configRow: {
-    padding: 10,
+    padding: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
