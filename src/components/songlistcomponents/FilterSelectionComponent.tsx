@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import Modal from 'react-native-modal';
-import {Appbar, Portal} from 'react-native-paper';
-import {StyleSheet, View} from 'react-native';
+import {Appbar} from 'react-native-paper';
+import {View} from 'react-native';
 import {useAppSelector} from '../../store/hooks.ts';
 import _ from 'lodash';
 import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
-import DropDown from '../utils/DropDown.tsx';
+import DropDown from '../bits/DropDown.tsx';
+import BottomDrawer from '../playlistcomponents/BottomDrawer.tsx';
 
 interface CategoryDropDown {
   label: string;
@@ -52,82 +52,25 @@ const FilterSelectionComponent = ({onCategoriesChange}: Props) => {
   return (
     <View>
       <Appbar.Action icon="filter" onPress={showModal} />
-      <Modal
-        testID={'modal'}
-        isVisible={visible}
-        onBackButtonPress={hideModal}
-        onBackdropPress={hideModal}
-        swipeDirection={['down']}
-        onSwipeComplete={hideModal}
-        useNativeDriverForBackdrop
-        propagateSwipe={true}
-        style={styles.modal}>
-        <Portal.Host>
-          <View style={styles.modalWrapper}>
-            <View
-              style={{
-                ...styles.view,
-                backgroundColor: theme.colors.background,
-              }}>
-              {/*indicator for touch*/}
-              <View style={styles.draggable} />
-              <View style={styles.filterContainer}>
-                <DropDown
-                  label={'Kategorien'}
-                  mode={'outlined'}
-                  visible={showMultiSelectDropDown}
-                  showDropDown={() => setShowMultiSelectDropDown(true)}
-                  onDismiss={() => setShowMultiSelectDropDown(false)}
-                  value={categories}
-                  setValue={setCategories}
-                  list={categoryList}
-                  multiSelect
-                  activeColor={theme.colors.primary}
-                  dropDownStyle={{
-                    borderColor: theme.colors.onBackground,
-                  }}
-                />
-              </View>
-            </View>
-          </View>
-        </Portal.Host>
-      </Modal>
+      <BottomDrawer visible={visible} hideModal={hideModal} theme={theme}>
+        <DropDown
+          label={'Kategorien'}
+          mode={'outlined'}
+          visible={showMultiSelectDropDown}
+          showDropDown={() => setShowMultiSelectDropDown(true)}
+          onDismiss={() => setShowMultiSelectDropDown(false)}
+          value={categories}
+          setValue={setCategories}
+          list={categoryList}
+          multiSelect
+          activeColor={theme.colors.primary}
+          dropDownStyle={{
+            borderColor: theme.colors.onBackground,
+          }}
+        />
+      </BottomDrawer>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  modal: {
-    margin: 0,
-    flex: 1,
-  },
-  modalWrapper: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  view: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    minHeight: '50%',
-    borderTopStartRadius: 20,
-    borderTopEndRadius: 20,
-  },
-  draggable: {
-    width: 50,
-    height: 5,
-    backgroundColor: 'lightgrey',
-    borderRadius: 5,
-    alignSelf: 'center',
-    marginTop: 10,
-    marginBottom: 10,
-  },
-  filterContainer: {
-    flex: 1,
-    margin: 20,
-  },
-});
 
 export default FilterSelectionComponent;

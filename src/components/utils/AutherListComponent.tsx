@@ -3,7 +3,7 @@ import {Icon, Text} from 'react-native-paper';
 import React from 'react';
 import {TextType, MelodieType} from '../../types/modeltypes.ts';
 import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
-import IconTextListComponent from './IconTextListComponent.tsx';
+import IconTextListComponent from '../bits/IconTextListComponent.tsx';
 
 type Props = {
   text: TextType;

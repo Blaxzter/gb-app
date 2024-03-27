@@ -1,15 +1,29 @@
 // features/settings/settingsSlice.ts
-import {createSlice} from '@reduxjs/toolkit';
+import {createSelector, createSlice} from '@reduxjs/toolkit';
+
+interface SongViewSettings {
+  musicInstrumentName: string;
+  musicInstrumentId: string;
+}
 
 // Define a type for the slice state
 interface SettingsState {
   theme: 'light' | 'dark';
-  // Other settings here
+  songViewSettings: SongViewSettings;
+  // type that every song can have individual settings
+  individualSongSettings: {
+    [songId: string]: SongViewSettings;
+  };
 }
 
 // Define the initial state using the `SettingsState` type
 const initialState: SettingsState = {
   theme: 'light',
+  songViewSettings: {
+    musicInstrumentName: 'Violin',
+    musicInstrumentId: '40',
+  },
+  individualSongSettings: {},
 };
 
 export const settingsSlice = createSlice({
@@ -25,5 +39,23 @@ export const settingsSlice = createSlice({
 });
 
 export const {toggleTheme} = settingsSlice.actions;
+
+export const selectIndividualSongSetting = createSelector(
+  [
+    (state: SettingsState, songId: string) => {
+      let individualSetting = state.individualSongSettings[songId] || null;
+      if (!individualSetting) {
+        individualSetting = state.songViewSettings;
+      } else {
+        individualSetting = {
+          ...individualSetting,
+          ...state.songViewSettings,
+        };
+      }
+      return individualSetting;
+    },
+  ],
+  songSetting => songSetting,
+);
 
 export default settingsSlice.reducer;

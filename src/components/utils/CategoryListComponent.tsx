@@ -1,7 +1,7 @@
 import {KategorieType} from '../../types/modeltypes.ts';
 import React from 'react';
 import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
-import IconTextListComponent from './IconTextListComponent.tsx';
+import IconTextListComponent from '../bits/IconTextListComponent.tsx';
 
 type Props = {
   categories: KategorieType[];

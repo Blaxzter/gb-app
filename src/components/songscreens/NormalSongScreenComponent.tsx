@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {Button, Text} from 'react-native-paper';
+import {Button, Icon, Text} from 'react-native-paper';
 import {Image, ScrollView, StyleSheet, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../store/store';
@@ -8,6 +8,8 @@ import {Gesangbuchlied} from '../../types/modeltypes.ts';
 import AuthorListComponent from '../utils/AutherListComponent.tsx';
 import CategoryListComponent from '../utils/CategoryListComponent.tsx';
 import ABCjsComponent, {ABCjsComponentRef} from './ABCjsComponent';
+import SongScreenSettings from './SongScreenSettings.tsx';
+import {directus_url} from '../../assets/scripts/directus.tsx';
 
 type Props = {
   lied: Gesangbuchlied;
@@ -18,9 +20,9 @@ const NormalSongScreenComponent = ({lied}: Props) => {
     state.settings.theme === 'light' ? lightTheme : darkTheme,
   );
 
-  // const firstPng = lied.melodieId.noten.find(noten =>
-  //   noten.directus_files_id.filename_download.endsWith('.png'),
-  // );
+  const firstPng = lied.melodieId.noten.find(noten =>
+    noten.directus_files_id.filename_download.endsWith('.png'),
+  );
 
   const abcComponentRef = useRef<ABCjsComponentRef>(null);
 
@@ -45,24 +47,24 @@ const NormalSongScreenComponent = ({lied}: Props) => {
   //   'eB B2 eBgB|eB B2 defg|afe^c dBAF|DEFD E2:|\\n' +
   //   '    ';
 
-  const abcNotation =
-    'X:1\\n' +
-    'T:Allein Gott In Der Hoeh Sei Ehr\\n' +
-    'L:1/4\\n' +
-    'Q:1/4=150\\n' +
-    'M:3/4\\n' +
-    'K:F\\n' +
-    'V:1\\n' +
-    '|: F | A2 B | c2 B | A2 G | A2 A |\\n' +
-    'w: Bis hier-her hat mich Gott ge-bracht durch\\n' +
-    'w: bis hier-her hat er Tag und Nacht be-\\n' +
-    'A2 G | (B A) G | (F2 G) | F2 :| F | F2 G | \\n' +
-    'w: sei-ne gro-ße Gü-te; _ _ Bis hier her\\n' +
-    'w: wah-rt Herz und Ge- müte.\\n' +
-    'B2 A | G2 ^F | G2 G | A2 B | c2 B | \\n' +
-    'w: hat er mich ge- leit’, bis hier-her hat er \\n' +
-    'A2 G | A2 F | G2 B | A2 G | (F2 E) | F2 |]\\n' +
-    'w: mich er-freut, bis hier-her mir ge-hol-fen.\\n';
+  // const abcNotation =
+  //   'X:1\\n' +
+  //   'T:Allein Gott In Der Hoeh Sei Ehr\\n' +
+  //   'L:1/4\\n' +
+  //   'Q:1/4=150\\n' +
+  //   'M:3/4\\n' +
+  //   'K:F\\n' +
+  //   'V:1\\n' +
+  //   '|: F | A2 B | c2 B | A2 G | A2 A |\\n' +
+  //   'w: Bis hier-her hat mich Gott ge-bracht durch\\n' +
+  //   'w: bis hier-her hat er Tag und Nacht be-\\n' +
+  //   'A2 G | (B A) G | (F2 G) | F2 :| F | F2 G | \\n' +
+  //   'w: sei-ne gro-ße Gü-te; _ _ Bis hier her\\n' +
+  //   'w: wah-rt Herz und Ge- müte.\\n' +
+  //   'B2 A | G2 ^F | G2 G | A2 B | c2 B | \\n' +
+  //   'w: hat er mich ge- leit’, bis hier-her hat er \\n' +
+  //   'A2 G | A2 F | G2 B | A2 G | (F2 E) | F2 |]\\n' +
+  //   'w: mich er-freut, bis hier-her mir ge-hol-fen.\\n';
 
   // const abcNotation =
   //   'X:1\\n' +
@@ -73,23 +75,23 @@ const NormalSongScreenComponent = ({lied}: Props) => {
   //   'K: G\\n' +
   //   '|:D2|EB{c}BA B2 EB|~B2 AB dBAG|FDAD BDAD|FDAD dAFD|';
 
-  // const abcNotation =
-  //   'X:3\\n' +
-  //   'T:Happy Birthday\\n' +
-  //   'T:for String Quartet\\n' +
-  //   'M:3/4\\n' +
-  //   'Q:1/4=90\\n' +
-  //   'L:1/4\\n' +
-  //   'K:C\\n' +
-  //   'V:1 name=Violin\\n' +
-  //   'G/2>G/2| A G c| B2 |\\n' +
-  //   'w: Hap-py birth-day to you\\n' +
-  //   'V:2 name=Violin\\n' +
-  //   'E| F G2| G2|\\n' +
-  //   'V:3 name=Viola clef=alto\\n' +
-  //   'C| B,2 E| D2|\\n' +
-  //   'V:4 name=Cello clef=bass\\n' +
-  //   'C,| F, E,/2-D,/2 C,| G, G,,|';
+  const abcNotation =
+    'X:3\\n' +
+    'T:Happy Birthday\\n' +
+    'T:for String Quartet\\n' +
+    'M:3/4\\n' +
+    'Q:1/4=90\\n' +
+    'L:1/4\\n' +
+    'K:C\\n' +
+    'V:1 name=Violin\\n' +
+    'G/2>G/2| A G c| B2 |\\n' +
+    'w: Hap-py birth-day to you\\n' +
+    'V:2 name=Violin\\n' +
+    'E| F G2| G2|\\n' +
+    'V:3 name=Viola clef=alto\\n' +
+    'C| B,2 E| D2|\\n' +
+    'V:4 name=Cello clef=bass\\n' +
+    'C,| F, E,/2-D,/2 C,| G, G,,|';
 
   // const abcNotation =
   //   'X:1\\n' +
@@ -113,12 +115,12 @@ const NormalSongScreenComponent = ({lied}: Props) => {
       {/*    }}*/}
       {/*  />*/}
       {/*)}*/}
-      {/*<Image*/}
-      {/*  style={styles.image}*/}
-      {/*  source={require('../../assets/images/Allein_Gott_In_Der_Hoeh_Sei_Ehr.png')}*/}
-      {/*  tintColor={theme.colors.onSurface}*/}
-      {/*/>*/}
-      <ABCjsComponent abcNotation={abcNotation} ref={abcComponentRef} />
+      <Image
+        style={styles.image}
+        source={require('../../assets/images/Allein_Gott_In_Der_Hoeh_Sei_Ehr.png')}
+        tintColor={theme.colors.onSurface}
+      />
+      {/*<ABCjsComponent abcNotation={abcNotation} ref={abcComponentRef} />*/}
       {/*// @ts-ignore*/}
       {/*<Button onPress={() => abcComponentRef?.current.playABC()}>Play</Button>*/}
       <ScrollView>
@@ -139,8 +141,13 @@ const NormalSongScreenComponent = ({lied}: Props) => {
           </View>
         </View>
       </ScrollView>
-      <Button onPress={handlePlayABC}>Play</Button>
-      <Button onPress={handlePauseABC}>Pause</Button>
+      <SongScreenSettings songId={lied.id} />
+      <Button onPress={handlePlayABC} icon="play" mode="outlined">
+        Play
+      </Button>
+      <Button onPress={handlePauseABC} icon="pause" mode="outlined">
+        Pause
+      </Button>
     </View>
   );
 };
