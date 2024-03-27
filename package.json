@@ -5,7 +5,7 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "lint": "eslint .",
+    "lint": "eslint ./src --ext .ts,.tsx",
     "start": "react-native start",
     "build-android": "npx react-native@latest build-android --mode=release",
     "send-to-phone": "yarn android --mode release",
@@ -23,6 +23,7 @@
     "react-dom": "^18.2.0",
     "react-native": "0.73.5",
     "react-native-config": "^1.5.1",
+    "react-native-gradle-plugin": "^0.71.19",
     "react-native-modal": "^13.0.1",
     "react-native-paper": "^5.12.3",
     "react-native-paper-dropdown": "^1.0.7",

@@ -6,7 +6,7 @@ import React, {
   useEffect,
 } from 'react';
 import {WebView} from 'react-native-webview';
-import {View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
 
 // define props
@@ -58,7 +58,7 @@ const ABCjsComponent = forwardRef<ABCjsComponentRef, ABCjsComponentProps>(
 
     const htmlContent = `
       <html lang="html">
-        <head>
+        <head> 
           <title id="title">ABCjs</title>
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
           <link rel="stylesheet" href="file:///android_asset/abcjs-audio.css">
@@ -205,11 +205,17 @@ const ABCjsComponent = forwardRef<ABCjsComponentRef, ABCjsComponentProps>(
           source={{html: htmlContent}}
           javaScriptEnabled={true}
           onMessage={handleWebViewMessage}
-          style={{flex: 1, backgroundColor: theme.colors.surface}}
+          style={{...styles.container, backgroundColor: theme.colors.surface}}
         />
       </View>
     );
   },
 );
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 export default ABCjsComponent;

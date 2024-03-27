@@ -14,6 +14,8 @@ interface SettingsState {
   individualSongSettings: {
     [songId: string]: SongViewSettings;
   };
+  // sheet display settings as string that has abcjs, png, transcribed
+  sheetDisplaySettings: 'abcjs' | 'png' | 'transcribed' | 'localpng';
 }
 
 // Define the initial state using the `SettingsState` type
@@ -24,6 +26,7 @@ const initialState: SettingsState = {
     musicInstrumentId: '40',
   },
   individualSongSettings: {},
+  sheetDisplaySettings: 'abcjs',
 };
 
 export const settingsSlice = createSlice({
@@ -56,6 +59,12 @@ export const selectIndividualSongSetting = createSelector(
     },
   ],
   songSetting => songSetting,
+);
+
+// selector for the songViewSettings
+export const selectSongViewSettings = createSelector(
+  [(state: SettingsState) => state.sheetDisplaySettings],
+  sheetDisplaySettings => sheetDisplaySettings,
 );
 
 export default settingsSlice.reducer;

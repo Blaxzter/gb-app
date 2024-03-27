@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
-import {ScrollView, StyleSheet, TouchableOpacity, View} from 'react-native';
+import React from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/types';
-import {Appbar, List, FAB, IconButton} from 'react-native-paper';
+import {Appbar, List} from 'react-native-paper';
 import {useSelector, useDispatch} from 'react-redux';
 import {RootState, AppDispatch} from '../store/store';
 // Import the actions you need from the playlistSlice
-import {addPlaylist, removePlaylist} from '../store/features/playlistSlice';
+import {removePlaylist} from '../store/features/playlistSlice';
 import CreatePlaylistComponent from '../components/playlistcomponents/CreatePlaylistComponent.tsx';
 import {useThemeSelection} from '../hooks/useThemeSelection.ts';
 import PlaylistDeleteButton from '../components/playlistcomponents/PlaylistDeleteButton.tsx';

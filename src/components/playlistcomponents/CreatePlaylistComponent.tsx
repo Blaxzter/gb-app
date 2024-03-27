@@ -11,8 +11,8 @@ const CreatePlaylistComponent = () => {
   const [playlistName, setPlaylistName] = useState('');
 
   const [isDialogVisible, setIsDialogVisible] = useState(false);
-  const handleCreateNewPlaylist = (playlistName: string) => {
-    dispatch(addPlaylist(playlistName));
+  const handleCreateNewPlaylist = (name: string) => {
+    dispatch(addPlaylist(name));
   };
 
   const handleSave = () => {

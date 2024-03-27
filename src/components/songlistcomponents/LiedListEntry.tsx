@@ -2,7 +2,6 @@ import {Gesangbuchlied} from '../../types/modeltypes.ts';
 import {Text, Avatar} from 'react-native-paper';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import CategoryScroller from '../utils/CategoryScroller.tsx';
 import AuthorListComponent from '../utils/AutherListComponent.tsx';
 import CategoryListComponent from '../utils/CategoryListComponent.tsx';
 import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
@@ -18,7 +17,7 @@ function LiedListEntry({lied, index}: {lied: Gesangbuchlied; index: number}) {
           label={(index + 1).toString()}
           style={{
             backgroundColor: theme.colors.secondaryContainer,
-            marginTop: 3,
+            ...styles.avatar,
           }}
           labelStyle={{
             color: theme.colors.onSecondaryContainer,
@@ -61,6 +60,9 @@ const styles = StyleSheet.create({
   },
   marginBottom: {
     marginBottom: 10,
+  },
+  avatar: {
+    marginTop: 3,
   },
 });
 

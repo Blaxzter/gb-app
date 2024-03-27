@@ -23,6 +23,7 @@ const IconTextListComponent = ({
   backgroundColor,
 }: Props) => {
   const theme = useThemeSelection();
+  const gapObject = {gap: gap || 5};
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
@@ -31,19 +32,19 @@ const IconTextListComponent = ({
           size={20}
           color={iconColor || theme.colors.onSurface}
         />
-        <View style={{...styles.textRow, gap: gap === undefined ? 5 : gap}}>
+        <View style={{...styles.textRow, ...gapObject}}>
           {content.map((item, index) => (
             <View
               key={index}
               style={{
                 ...styles.item,
-                backgroundColor: backgroundColor || theme.colors.surface,
-                borderColor: backgroundColor || theme.colors.surface,
+                backgroundColor: backgroundColor || 'transparent',
+                borderColor: backgroundColor || 'transparent',
               }}>
               <Text
                 style={{
                   ...styles.container,
-                  backgroundColor: backgroundColor || theme.colors.surface,
+                  backgroundColor: backgroundColor || 'transparent',
                   color: color || theme.colors.onSurface,
                 }}
                 key={index}>

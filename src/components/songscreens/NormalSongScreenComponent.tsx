@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {Button, Icon, Text} from 'react-native-paper';
+import {Button, Text} from 'react-native-paper';
 import {Image, ScrollView, StyleSheet, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../store/store';
@@ -10,6 +10,8 @@ import CategoryListComponent from '../utils/CategoryListComponent.tsx';
 import ABCjsComponent, {ABCjsComponentRef} from './ABCjsComponent';
 import SongScreenSettings from './SongScreenSettings.tsx';
 import {directus_url} from '../../assets/scripts/directus.tsx';
+import {selectSongViewSettings} from '../../store/features/settingsSlice.ts';
+import {exportStandAllein} from '../../assets/scripts/constants.ts';
 
 type Props = {
   lied: Gesangbuchlied;
@@ -19,6 +21,10 @@ const NormalSongScreenComponent = ({lied}: Props) => {
   const theme = useSelector((state: RootState) =>
     state.settings.theme === 'light' ? lightTheme : darkTheme,
   );
+  const displayMode = useSelector(selectSongViewSettings);
+  const isABCVisible = displayMode === 'abcjs';
+  const isPNGVisible = displayMode === 'png';
+  const isLocalPNGVisible = displayMode === 'localpng';
 
   const firstPng = lied.melodieId.noten.find(noten =>
     noten.directus_files_id.filename_download.endsWith('.png'),
@@ -34,95 +40,28 @@ const NormalSongScreenComponent = ({lied}: Props) => {
     abcComponentRef.current?.pauseABC();
   };
 
-  // const abcNotation =
-  //   'X: 1\\n' +
-  //   'M: 4/4\\n' +
-  //   'L: 1/8\\n' +
-  //   'R: reel\\n' +
-  //   'K: Em\\n' +
-  //   'V: Melody\\n' +
-  //   '|:D2|EB{c}BA B2 EB|~B2 AB dBAG|FDAD BDAD|FDAD dAFD|\\n' +
-  //   'EBBA B2 EB|B2 AB defg|afe^c dBAF|DEFD E2:|\\n' +
-  //   '|:gf|eB B2 efge|eB B2 gedB|A2 FA DAFA|A2 FA defg|\\n' +
-  //   'eB B2 eBgB|eB B2 defg|afe^c dBAF|DEFD E2:|\\n' +
-  //   '    ';
-
-  // const abcNotation =
-  //   'X:1\\n' +
-  //   'T:Allein Gott In Der Hoeh Sei Ehr\\n' +
-  //   'L:1/4\\n' +
-  //   'Q:1/4=150\\n' +
-  //   'M:3/4\\n' +
-  //   'K:F\\n' +
-  //   'V:1\\n' +
-  //   '|: F | A2 B | c2 B | A2 G | A2 A |\\n' +
-  //   'w: Bis hier-her hat mich Gott ge-bracht durch\\n' +
-  //   'w: bis hier-her hat er Tag und Nacht be-\\n' +
-  //   'A2 G | (B A) G | (F2 G) | F2 :| F | F2 G | \\n' +
-  //   'w: sei-ne gro-ße Gü-te; _ _ Bis hier her\\n' +
-  //   'w: wah-rt Herz und Ge- müte.\\n' +
-  //   'B2 A | G2 ^F | G2 G | A2 B | c2 B | \\n' +
-  //   'w: hat er mich ge- leit’, bis hier-her hat er \\n' +
-  //   'A2 G | A2 F | G2 B | A2 G | (F2 E) | F2 |]\\n' +
-  //   'w: mich er-freut, bis hier-her mir ge-hol-fen.\\n';
-
-  // const abcNotation =
-  //   'X:1\\n' +
-  //   "T: Cooley's\\n" +
-  //   'M: 4/4\\n' +
-  //   'L: 1/8\\n' +
-  //   'R: reel\\n' +
-  //   'K: G\\n' +
-  //   '|:D2|EB{c}BA B2 EB|~B2 AB dBAG|FDAD BDAD|FDAD dAFD|';
-
-  const abcNotation =
-    'X:3\\n' +
-    'T:Happy Birthday\\n' +
-    'T:for String Quartet\\n' +
-    'M:3/4\\n' +
-    'Q:1/4=90\\n' +
-    'L:1/4\\n' +
-    'K:C\\n' +
-    'V:1 name=Violin\\n' +
-    'G/2>G/2| A G c| B2 |\\n' +
-    'w: Hap-py birth-day to you\\n' +
-    'V:2 name=Violin\\n' +
-    'E| F G2| G2|\\n' +
-    'V:3 name=Viola clef=alto\\n' +
-    'C| B,2 E| D2|\\n' +
-    'V:4 name=Cello clef=bass\\n' +
-    'C,| F, E,/2-D,/2 C,| G, G,,|';
-
-  // const abcNotation =
-  //   'X:1\\n' +
-  //   'T:Ich Stand Allein Mit Meiner Last\\n' +
-  //   'L:1/4\\n' +
-  //   'Q:1/4=120\\n' +
-  //   'M:4/4\\n' +
-  //   'K:F\\n' +
-  //   'V:1\\n' +
-  //   ' c | c3/2 B/ A G | F3/2 C/ C C | F F A/G/ F/G/ |$[K:C] E3 C | C A G F | F B A G | F C/F/ G G | %8\\n' +
-  //   ' F3 |] %9\\n';
-
   return (
     <View style={styles.container}>
       {/*<Text variant={'titleLarge'}>{lied.titel}</Text>*/}
-      {/*{firstPng && (*/}
-      {/*  <Image*/}
-      {/*    style={styles.image}*/}
-      {/*    source={{*/}
-      {/*      uri: `${directus_url}/assets/${firstPng?.directus_files_id.id}`,*/}
-      {/*    }}*/}
-      {/*  />*/}
-      {/*)}*/}
-      <Image
-        style={styles.image}
-        source={require('../../assets/images/Allein_Gott_In_Der_Hoeh_Sei_Ehr.png')}
-        tintColor={theme.colors.onSurface}
-      />
-      {/*<ABCjsComponent abcNotation={abcNotation} ref={abcComponentRef} />*/}
-      {/*// @ts-ignore*/}
-      {/*<Button onPress={() => abcComponentRef?.current.playABC()}>Play</Button>*/}
+      {firstPng && isPNGVisible && (
+        <Image
+          style={styles.image}
+          source={{
+            uri: `${directus_url}/assets/${firstPng?.directus_files_id.id}`,
+          }}
+        />
+      )}
+
+      {isLocalPNGVisible && (
+        <Image
+          style={styles.image}
+          source={require('../../assets/images/Allein_Gott_In_Der_Hoeh_Sei_Ehr.png')}
+          tintColor={theme.colors.onSurface}
+        />
+      )}
+      {isABCVisible && (
+        <ABCjsComponent abcNotation={exportStandAllein} ref={abcComponentRef} />
+      )}
       <ScrollView>
         <View style={styles.container}>
           {lied.textId.strophenEinzeln.map((strophe, index) => (

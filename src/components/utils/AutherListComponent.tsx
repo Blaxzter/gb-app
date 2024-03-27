@@ -1,8 +1,6 @@
 import {StyleSheet, View} from 'react-native';
-import {Icon, Text} from 'react-native-paper';
 import React from 'react';
 import {TextType, MelodieType} from '../../types/modeltypes.ts';
-import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
 import IconTextListComponent from '../bits/IconTextListComponent.tsx';
 
 type Props = {
@@ -11,8 +9,6 @@ type Props = {
 };
 
 const AuthorListComponent = ({text, melodie}: Props) => {
-  const theme = useThemeSelection();
-
   const textAuthorNames = text?.autorId?.map(autor => {
     return autor.autor_id.vorname + ' ' + autor.autor_id.nachname;
   });

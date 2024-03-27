@@ -1,13 +1,5 @@
 import React, {useState} from 'react';
-import {
-  Modal,
-  Button,
-  Portal,
-  Text,
-  IconButton,
-  Dialog,
-  TextInput,
-} from 'react-native-paper';
+import {Button, Portal, Text, IconButton, Dialog} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
 
 interface PlaylistDeleteButtonProps {

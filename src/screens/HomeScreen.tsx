@@ -4,20 +4,13 @@ import * as React from 'react';
 import {View, StyleSheet, Image} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/types.ts';
-import {
-  ActivityIndicator,
-  Button,
-  Divider,
-  Menu,
-  Text,
-} from 'react-native-paper';
+import {ActivityIndicator, Button, Text} from 'react-native-paper';
 import {useAppSelector} from '../store/hooks.ts';
 import {useEffect} from 'react';
 import fetchGBData from '../store/queries/thunk.tsx';
 import {useAppDispatch} from '../store/hooks.ts';
 import {Gesangbuchlied} from '../types/modeltypes.ts';
 import {useIsDarkTheme, useThemeSelection} from '../hooks/useThemeSelection.ts';
-import AnimatedDrawerMenu from '../components/utils/AnimatedDrawerMenu.tsx';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -36,12 +29,6 @@ function HomeScreen({navigation}: Props) {
       dispatch(fetchGBData());
     }
   }, [dispatch, gbSongs]);
-
-  const [visible, setVisible] = React.useState(false);
-
-  const openMenu = () => setVisible(true);
-
-  const closeMenu = () => setVisible(false);
 
   return (
     <View
