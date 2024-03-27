@@ -1,5 +1,6 @@
 import React from 'react';
-import {SectionList, Text, View, StyleSheet} from 'react-native';
+import {SectionList, View, StyleSheet} from 'react-native';
+import {List} from 'react-native-paper';
 
 const instrumentsSections = [
   {
@@ -280,17 +281,27 @@ const instrumentsSections = [
   },
 ];
 
-const MidiInstrumentsList = () => {
+type Props = {
+  onInstrumentSelect: (instrument: number, name: string) => void;
+};
+
+const MidiInstrumentsList = ({onInstrumentSelect}: Props) => {
   return (
     <View style={styles.container}>
       <SectionList
         sections={instrumentsSections}
         keyExtractor={(item, index) => item.name + index}
         renderItem={({item}) => (
-          <Text>{`${item.name} (Program Number: ${item.number})`}</Text>
+          <List.Item
+            title={item.name}
+            description="Item description"
+            onPress={() => {
+              onInstrumentSelect(item.number, item.translation);
+            }}
+          />
         )}
         renderSectionHeader={({section: {title}}) => (
-          <Text style={styles.header}>{title}</Text>
+          <List.Subheader>{title}</List.Subheader>
         )}
       />
     </View>
