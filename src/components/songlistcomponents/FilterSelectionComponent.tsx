@@ -5,7 +5,7 @@ import {useAppSelector} from '../../store/hooks.ts';
 import _ from 'lodash';
 import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
 import DropDown from '../bits/DropDown.tsx';
-import BottomDrawer from '../playlistcomponents/BottomDrawer.tsx';
+import BottomDrawer from '../bits/BottomDrawer.tsx';
 
 interface CategoryDropDown {
   label: string;

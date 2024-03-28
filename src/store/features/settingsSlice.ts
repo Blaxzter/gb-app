@@ -1,5 +1,5 @@
 // features/settings/settingsSlice.ts
-import {createSelector, createSlice} from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 
 interface SongViewSettings {
   musicInstrumentName: string;
@@ -7,7 +7,7 @@ interface SongViewSettings {
 }
 
 // Define a type for the slice state
-interface SettingsState {
+export interface SettingsState {
   theme: 'light' | 'dark';
   songViewSettings: SongViewSettings;
   // type that every song can have individual settings
@@ -37,34 +37,21 @@ export const settingsSlice = createSlice({
     toggleTheme: state => {
       state.theme = state.theme === 'light' ? 'dark' : 'light';
     },
+    saveIndividualSongSetting: (
+      state,
+      action: {payload: {songId: string; settings: any}; type: string},
+    ) => {
+      console.log('saveIndividualSongSetting', action.payload);
+      // merge the new settings with the old settings
+      state.individualSongSettings[action.payload.songId] = {
+        ...state.individualSongSettings[action.payload.songId],
+        ...action.payload.settings,
+      };
+    },
     // Additional reducers can be added here
   },
 });
 
-export const {toggleTheme} = settingsSlice.actions;
-
-export const selectIndividualSongSetting = createSelector(
-  [
-    (state: SettingsState, songId: string) => {
-      let individualSetting = state.individualSongSettings[songId] || null;
-      if (!individualSetting) {
-        individualSetting = state.songViewSettings;
-      } else {
-        individualSetting = {
-          ...individualSetting,
-          ...state.songViewSettings,
-        };
-      }
-      return individualSetting;
-    },
-  ],
-  songSetting => songSetting,
-);
-
-// selector for the songViewSettings
-export const selectSongViewSettings = createSelector(
-  [(state: SettingsState) => state.sheetDisplaySettings],
-  sheetDisplaySettings => sheetDisplaySettings,
-);
+export const {toggleTheme, saveIndividualSongSetting} = settingsSlice.actions;
 
 export default settingsSlice.reducer;

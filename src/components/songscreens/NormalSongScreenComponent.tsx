@@ -10,8 +10,8 @@ import CategoryListComponent from '../utils/CategoryListComponent.tsx';
 import ABCjsComponent, {ABCjsComponentRef} from './ABCjsComponent';
 import SongScreenSettings from './SongScreenSettings.tsx';
 import {directus_url} from '../../assets/scripts/directus.tsx';
-import {selectSongViewSettings} from '../../store/features/settingsSlice.ts';
 import {exportStandAllein} from '../../assets/scripts/constants.ts';
+import {selectSongViewSettings} from '../../hooks/useSettings.ts';
 
 type Props = {
   lied: Gesangbuchlied;
@@ -21,7 +21,10 @@ const NormalSongScreenComponent = ({lied}: Props) => {
   const theme = useSelector((state: RootState) =>
     state.settings.theme === 'light' ? lightTheme : darkTheme,
   );
-  const displayMode = useSelector(selectSongViewSettings);
+  const displayMode = useSelector((state: RootState) =>
+    selectSongViewSettings(state.settings),
+  );
+  console.log('displayMode', displayMode);
   const isABCVisible = displayMode === 'abcjs';
   const isPNGVisible = displayMode === 'png';
   const isLocalPNGVisible = displayMode === 'localpng';
@@ -38,6 +41,10 @@ const NormalSongScreenComponent = ({lied}: Props) => {
 
   const handlePauseABC = () => {
     abcComponentRef.current?.pauseABC();
+  };
+
+  const handleRerender = () => {
+    console.log('Rerender');
   };
 
   return (
@@ -60,7 +67,11 @@ const NormalSongScreenComponent = ({lied}: Props) => {
         />
       )}
       {isABCVisible && (
-        <ABCjsComponent abcNotation={exportStandAllein} ref={abcComponentRef} />
+        <ABCjsComponent
+          abcNotation={exportStandAllein}
+          ref={abcComponentRef}
+          songId={lied.id}
+        />
       )}
       <ScrollView>
         <View style={styles.container}>
@@ -80,7 +91,7 @@ const NormalSongScreenComponent = ({lied}: Props) => {
           </View>
         </View>
       </ScrollView>
-      <SongScreenSettings songId={lied.id} />
+      <SongScreenSettings songId={lied.id} reRender={handleRerender} />
       <Button onPress={handlePlayABC} icon="play" mode="outlined">
         Play
       </Button>

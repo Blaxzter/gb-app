@@ -8,9 +8,13 @@ import React, {
 import {WebView} from 'react-native-webview';
 import {StyleSheet, View} from 'react-native';
 import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../store/store.ts';
+import {selectIndividualSongSetting} from '../../hooks/useSettings.ts';
 
 // define props
 interface ABCjsComponentProps {
+  songId: string;
   abcNotation: string;
   millisecondsPerMeasure?: number;
   zoom?: number;
@@ -23,10 +27,14 @@ export interface ABCjsComponentRef {
 }
 
 const ABCjsComponent = forwardRef<ABCjsComponentRef, ABCjsComponentProps>(
-  ({abcNotation, millisecondsPerMeasure, zoom, transposeStep}, ref) => {
+  ({songId, abcNotation, millisecondsPerMeasure, zoom, transposeStep}, ref) => {
     const theme = useThemeSelection();
     const webViewRef = useRef<WebView>(null);
     const [webviewHeight, setWebviewHeight] = useState<number>(100);
+
+    const songSettings = useSelector((state: RootState) =>
+      selectIndividualSongSetting(state.settings, songId),
+    );
 
     // check if tempo is defined in abcNotation
     transposeStep = transposeStep || 0;
@@ -162,7 +170,7 @@ const ABCjsComponent = forwardRef<ABCjsComponentRef, ABCjsComponentProps>(
                   millisecondsPerMeasure: ${millisecondsPerMeasure},
                   options: {
                       soundFontUrl: "https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
-                      program: 56,
+                      program: ${songSettings.musicInstrumentId},
                       pan: [ -0.3, 0.3 ],
                       midiTranspose: ${transposeStep},
                   }

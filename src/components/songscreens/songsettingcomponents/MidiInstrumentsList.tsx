@@ -1,10 +1,13 @@
 import React from 'react';
-import {SectionList, View, StyleSheet} from 'react-native';
-import {List} from 'react-native-paper';
+import {View, StyleSheet, ScrollView} from 'react-native';
+import {Button, Divider, List} from 'react-native-paper';
+import {InstrumentIcon} from '../../../assets/fonts/fontloader';
+import {useThemeSelection} from '../../../hooks/useThemeSelection.ts';
 
 const instrumentsSections = [
   {
     title: 'Pianos',
+    icon: 'instrument-piano',
     data: [
       {
         name: 'Acoustic Grand Piano',
@@ -38,6 +41,7 @@ const instrumentsSections = [
   },
   {
     title: 'Chromatic Percussion',
+    icon: 'instrument-percussive',
     data: [
       {name: 'Celesta', translation: 'Celesta', number: 8},
       {name: 'Glockenspiel', translation: 'Glockenspiel', number: 9},
@@ -51,6 +55,7 @@ const instrumentsSections = [
   },
   {
     title: 'Organ',
+    icon: 'instrument-organ',
     data: [
       {name: 'Drawbar Organ', translation: 'Zugriegelorgel', number: 16},
       {name: 'Percussive Organ', translation: 'Schlagwerkorgel', number: 17},
@@ -64,6 +69,7 @@ const instrumentsSections = [
   },
   {
     title: 'Guitar',
+    icon: 'instrument-guitar-1',
     data: [
       {
         name: 'Acoustic Guitar (nylon)',
@@ -101,6 +107,7 @@ const instrumentsSections = [
   },
   {
     title: 'Bass',
+    icon: 'instrument-bass-guitar',
     data: [
       {name: 'Acoustic Bass', translation: 'Akustikbass', number: 32},
       {
@@ -122,6 +129,7 @@ const instrumentsSections = [
   },
   {
     title: 'Strings',
+    icon: 'instrument-violin',
     data: [
       {name: 'Violin', translation: 'Violine', number: 40},
       {name: 'Viola', translation: 'Bratsche', number: 41},
@@ -135,6 +143,7 @@ const instrumentsSections = [
   },
   {
     title: 'Ensemble',
+    icon: 'instrument-orchestra',
     data: [
       {name: 'String Ensemble 1', translation: 'Streichensemble 1', number: 48},
       {name: 'String Ensemble 2', translation: 'Streichensemble 2', number: 49},
@@ -148,6 +157,7 @@ const instrumentsSections = [
   },
   {
     title: 'Brass',
+    icon: 'instrument-trumpet',
     data: [
       {name: 'Trumpet', translation: 'Trompete', number: 56},
       {name: 'Trombone', translation: 'Posaune', number: 57},
@@ -160,7 +170,8 @@ const instrumentsSections = [
     ],
   },
   {
-    title: 'Reed',
+    title: 'Sax',
+    icon: 'instrument-sax',
     data: [
       {name: 'Soprano Sax', translation: 'Sopransaxophon', number: 64},
       {name: 'Alto Sax', translation: 'Altsaxophon', number: 65},
@@ -174,6 +185,7 @@ const instrumentsSections = [
   },
   {
     title: 'Pipe',
+    icon: 'instrument-flute',
     data: [
       {name: 'Piccolo', translation: 'Piccoloflöte', number: 72},
       {name: 'Flute', translation: 'Querflöte', number: 73},
@@ -187,6 +199,7 @@ const instrumentsSections = [
   },
   {
     title: 'Synth Lead',
+    icon: 'instrument-synth',
     data: [
       {
         name: 'Lead 1 (square)',
@@ -208,6 +221,7 @@ const instrumentsSections = [
   },
   {
     title: 'Synth Pad',
+    icon: 'instrument-pad',
     data: [
       {name: 'Pad 1 (new age)', translation: 'Pad 1 (New Age)', number: 88},
       {name: 'Pad 2 (warm)', translation: 'Pad 2 (Warm)', number: 89},
@@ -221,6 +235,7 @@ const instrumentsSections = [
   },
   {
     title: 'Sound Effects',
+    icon: 'instrument-fx',
     data: [
       {name: 'FX 1 (rain)', translation: 'FX 1 (Regen)', number: 96},
       {name: 'FX 2 (soundtrack)', translation: 'FX 2 (Filmmusik)', number: 97},
@@ -238,6 +253,7 @@ const instrumentsSections = [
   },
   {
     title: 'Ethnic',
+    icon: 'instrument-bagpipe',
     data: [
       {name: 'Sitar', translation: 'Sitar', number: 104},
       {name: 'Banjo', translation: 'Banjo', number: 105},
@@ -251,6 +267,7 @@ const instrumentsSections = [
   },
   {
     title: 'Percussive',
+    icon: 'instrument-percussive',
     data: [
       {name: 'Tinkle Bell', translation: 'Klingelglöckchen', number: 112},
       {name: 'Agogo', translation: 'Agogo', number: 113},
@@ -264,6 +281,7 @@ const instrumentsSections = [
   },
   {
     title: 'Miscellaneous',
+    icon: 'instrument-misc',
     data: [
       {
         name: 'Guitar Fret Noise',
@@ -283,27 +301,53 @@ const instrumentsSections = [
 
 type Props = {
   onInstrumentSelect: (instrument: number, name: string) => void;
+  modalClose: () => void;
 };
 
-const MidiInstrumentsList = ({onInstrumentSelect}: Props) => {
+const MidiInstrumentsList = ({onInstrumentSelect, modalClose}: Props) => {
+  const theme = useThemeSelection();
   return (
     <View style={styles.container}>
-      <SectionList
-        sections={instrumentsSections}
-        keyExtractor={(item, index) => item.name + index}
-        renderItem={({item}) => (
-          <List.Item
-            title={item.name}
-            description="Item description"
-            onPress={() => {
-              onInstrumentSelect(item.number, item.translation);
-            }}
-          />
-        )}
-        renderSectionHeader={({section: {title}}) => (
-          <List.Subheader>{title}</List.Subheader>
-        )}
-      />
+      {/* Close Button at the top */}
+      <Button
+        icon={'chevron-triple-right'}
+        onPress={modalClose}
+        mode={'text'}
+        textColor={theme.colors.onSurface}>
+        click here or swipe right to close
+      </Button>
+
+      <Divider />
+
+      <ScrollView>
+        <List.AccordionGroup>
+          {instrumentsSections.map((section, sectionIndex) => (
+            <List.Accordion
+              id={String(sectionIndex)}
+              title={section.title}
+              left={props => (
+                <InstrumentIcon
+                  {...props}
+                  name={section.icon}
+                  size={30}
+                  color={theme.colors.onSurface}
+                />
+              )}
+              key={section.title + sectionIndex}>
+              {section.data.map((item, itemIndex) => (
+                <List.Item
+                  title={item.translation}
+                  key={item.name + itemIndex}
+                  left={props => <List.Icon {...props} icon="chevron-right" />}
+                  onPress={() => {
+                    onInstrumentSelect(item.number, item.translation);
+                  }}
+                />
+              ))}
+            </List.Accordion>
+          ))}
+        </List.AccordionGroup>
+      </ScrollView>
     </View>
   );
 };
@@ -312,13 +356,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    backgroundColor: '#eee',
-    padding: 2,
-  },
-  item: {},
 });
 
 export default MidiInstrumentsList;

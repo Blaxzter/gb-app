@@ -1,5 +1,5 @@
 // App.tsx
-import React, {useEffect} from 'react';
+import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {PaperProvider, Text} from 'react-native-paper';
 import {Provider as StoreProvider} from 'react-redux';
