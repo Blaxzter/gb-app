@@ -1,5 +1,11 @@
 // features/settings/settingsSlice.ts
 import {createSlice} from '@reduxjs/toolkit';
+import {
+  abcExample1,
+  abcHappyBirthday,
+  abcWithText,
+  exportStandAllein,
+} from '../../assets/scripts/constants.ts';
 
 interface SongViewSettings {
   musicInstrumentName: string;
@@ -16,6 +22,12 @@ export interface SettingsState {
   };
   // sheet display settings as string that has abcjs, png, transcribed
   sheetDisplaySettings: 'abcjs' | 'png' | 'transcribed' | 'localpng';
+  abcExample:
+    | 'orig'
+    | 'abcExample1'
+    | 'abcWithText'
+    | 'abcHappyBirthday'
+    | 'exportStandAllein';
 }
 
 // Define the initial state using the `SettingsState` type
@@ -27,6 +39,7 @@ const initialState: SettingsState = {
   },
   individualSongSettings: {},
   sheetDisplaySettings: 'abcjs',
+  abcExample: 'orig',
 };
 
 export const settingsSlice = createSlice({
@@ -48,10 +61,38 @@ export const settingsSlice = createSlice({
         ...action.payload.settings,
       };
     },
+    setSongViewSettings: (
+      state,
+      action: {
+        payload: 'abcjs' | 'png' | 'transcribed' | 'localpng';
+        type: string;
+      },
+    ) => {
+      state.sheetDisplaySettings = action.payload;
+    },
+    setAbcExample: (
+      state,
+      action: {
+        payload:
+          | 'orig'
+          | 'abcExample1'
+          | 'abcWithText'
+          | 'abcHappyBirthday'
+          | 'exportStandAllein';
+        type: string;
+      },
+    ) => {
+      state.abcExample = action.payload;
+    },
     // Additional reducers can be added here
   },
 });
 
-export const {toggleTheme, saveIndividualSongSetting} = settingsSlice.actions;
+export const {
+  toggleTheme,
+  saveIndividualSongSetting,
+  setSongViewSettings,
+  setAbcExample,
+} = settingsSlice.actions;
 
 export default settingsSlice.reducer;

@@ -4,7 +4,7 @@ import * as React from 'react';
 import {View, StyleSheet, Image} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/types.ts';
-import {ActivityIndicator, Button, Text} from 'react-native-paper';
+import {ActivityIndicator, Button, FAB, Text} from 'react-native-paper';
 import {useAppSelector} from '../store/hooks.ts';
 import {useEffect} from 'react';
 import fetchGBData from '../store/queries/thunk.tsx';
@@ -80,6 +80,14 @@ function HomeScreen({navigation}: Props) {
           Einstellungen
         </Button>
       </View>
+      <FAB
+        style={styles.fab}
+        icon="refresh"
+        onPress={() => dispatch(fetchGBData())}
+        color={'white'}
+        size={'small'}
+        theme={{colors: {accent: theme.colors.secondary}}}
+      />
     </View>
   );
 }
@@ -122,6 +130,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 20,
     textAlign: 'center',
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    top: 0,
   },
 });
 

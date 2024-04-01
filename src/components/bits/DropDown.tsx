@@ -145,7 +145,13 @@ const DropDown = forwardRef<TouchableWithoutFeedback, DropDownPropsInterface>(
         anchorPosition={'top'}
         onDismiss={onDismiss}
         theme={theme}
-        elevation={1}
+        elevation={0}
+        contentStyle={{
+          borderWidth: 1,
+          borderTopWidth: 0,
+          borderColor: theme.colors.onSurface,
+          backgroundColor: theme.colors.surface,
+        }}
         anchor={
           <TouchableRipple
             ref={ref as any}

@@ -48,7 +48,6 @@ export const playlistSlice = createSlice({
     },
     // Remove a playlist
     removePlaylist: (state, action: PayloadAction<string>) => {
-      console.log('Filter Playlist');
       state.playlists = state.playlists.filter(
         playlist => playlist.id !== action.payload,
       );

@@ -22,15 +22,24 @@ function SongListScreen({navigation}: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   // State to hold selected categories
   const [selectedCategories, setSelectedCategories] = useState<string>('');
+  const [hasABC, setHasABC] = useState<boolean>(false);
 
   // Callback function to update selected categories
   const handleCategoriesChange = (newCategories: string) => {
     setSelectedCategories(newCategories);
   };
 
+  const handleABCChange = (newHasABC: boolean) => {
+    setHasABC(newHasABC);
+  };
+
   const data = useAppSelector(state => state.gbData.data);
 
   const filterSongs = (lied: Gesangbuchlied) => {
+    if (hasABC && lied?.melodieId?.abc_melodie === null) {
+      return false;
+    }
+
     const lowerCaseSearchQuery = searchQuery.toLowerCase();
     if (selectedCategories === '' && searchQuery === '') {
       return true;
@@ -42,8 +51,6 @@ function SongListScreen({navigation}: Props) {
         : _.some(lied.kategorieId, kategorie =>
             category_split.includes(kategorie.kategorie_id.name?.toLowerCase()),
           );
-
-    console.log(lowerCaseSearchQuery);
 
     const searchQueryMatch =
       searchQuery === ''
@@ -59,18 +66,22 @@ function SongListScreen({navigation}: Props) {
     setSearchQuery(query);
   };
 
+  const filteredSongs = data?.filter(filterSongs);
+
   return (
     <View
       style={{...styles.container, backgroundColor: theme.colors.background}}>
       <SongListSearchAppBar
+        amountOfSongs={filteredSongs?.length}
         searchQuery={searchQuery}
         onSearchQueryChange={handleSearchQueryChange}
         onCategoriesChange={handleCategoriesChange}
+        onABCChange={handleABCChange}
       />
       <View>
         {data && (
           <FlatList
-            data={data.filter(lied => filterSongs(lied))}
+            data={filteredSongs}
             renderItem={({item, index}) => (
               <View>
                 <TouchableRipple

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {Appbar} from 'react-native-paper';
-import {View} from 'react-native';
+import {Appbar, Switch, Text} from 'react-native-paper';
+import {StyleSheet, View} from 'react-native';
 import {useAppSelector} from '../../store/hooks.ts';
 import _ from 'lodash';
 import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
@@ -14,9 +14,10 @@ interface CategoryDropDown {
 
 type Props = {
   onCategoriesChange: (newCategories: string) => void;
+  onABCChange: (hasABC: boolean) => void;
 };
 
-const FilterSelectionComponent = ({onCategoriesChange}: Props) => {
+const FilterSelectionComponent = ({onCategoriesChange, onABCChange}: Props) => {
   const theme = useThemeSelection();
 
   const [visible, setModalVisibility] = useState<boolean>(false);
@@ -25,6 +26,8 @@ const FilterSelectionComponent = ({onCategoriesChange}: Props) => {
 
   const gesangbuchlieder = useAppSelector(state => state.gbData.data);
   const [categoryList, setCategoryList] = useState<CategoryDropDown[]>([]);
+
+  const [hasABC, setHasABC] = useState<boolean>(false);
 
   useEffect(() => {
     const currentCategories = _(gesangbuchlieder)
@@ -45,6 +48,11 @@ const FilterSelectionComponent = ({onCategoriesChange}: Props) => {
     // Whenever categories change, call the passed callback function
     onCategoriesChange(categories);
   }, [categories, onCategoriesChange]);
+
+  useEffect(() => {
+    // Whenever the ABC switch changes, call the passed callback function
+    onABCChange(hasABC);
+  }, [hasABC, onABCChange]);
 
   const showModal = () => setModalVisibility(true);
   const hideModal = () => setModalVisibility(false);
@@ -68,9 +76,23 @@ const FilterSelectionComponent = ({onCategoriesChange}: Props) => {
             borderColor: theme.colors.onBackground,
           }}
         />
+        <View style={styles.configRow}>
+          <Text variant="titleMedium">Nur ABC Render:</Text>
+          <Switch value={hasABC} onValueChange={setHasABC} />
+        </View>
       </BottomDrawer>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  configRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    paddingVertical: 20,
+  },
+});
 
 export default FilterSelectionComponent;

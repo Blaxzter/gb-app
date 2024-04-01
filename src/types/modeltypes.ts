@@ -40,7 +40,15 @@ export type AutorDetails = {
   sterbejahr: number;
 };
 
+export type ABCMelodie = {
+  name: string;
+  abc_notation: string;
+  is_default: boolean;
+  file_id?: string;
+};
+
 export type MelodieDB = {
+  abc_melodie?: ABCMelodie[];
   autorId: AutorType[];
   noten: Noten[];
 };

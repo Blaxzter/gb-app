@@ -4,15 +4,19 @@ import {useNavigation} from '@react-navigation/native';
 import FilterSelectionComponent from './FilterSelectionComponent.tsx';
 
 interface SearchComponentProps {
+  amountOfSongs: number;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
   onCategoriesChange: (query: string) => void;
+  onABCChange: (query: boolean) => void;
 }
 
 const SongListSearchAppBar: React.FC<SearchComponentProps> = ({
+  amountOfSongs,
   searchQuery,
   onSearchQueryChange,
   onCategoriesChange,
+  onABCChange,
 }) => {
   const navigation = useNavigation();
   const [isSearchActive, setIsSearchActive] = useState<boolean>(false);
@@ -36,7 +40,7 @@ const SongListSearchAppBar: React.FC<SearchComponentProps> = ({
       ) : (
         <>
           <Appbar.BackAction onPress={() => navigation.goBack()} />
-          <Appbar.Content title="Gesangbuchlieder" />
+          <Appbar.Content title={`Gesangbuchlieder (${amountOfSongs})`} />
           <Appbar.Action
             icon="magnify"
             onPress={() => {
@@ -44,7 +48,10 @@ const SongListSearchAppBar: React.FC<SearchComponentProps> = ({
               onSearchQueryChange('');
             }}
           />
-          <FilterSelectionComponent onCategoriesChange={onCategoriesChange} />
+          <FilterSelectionComponent
+            onCategoriesChange={onCategoriesChange}
+            onABCChange={onABCChange}
+          />
         </>
       )}
     </Appbar.Header>

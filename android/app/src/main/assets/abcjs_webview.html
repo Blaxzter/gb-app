@@ -1,0 +1,302 @@
+<html lang="html">
+
+<head>
+  <title id="title">ABCjs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="{{abc-js-file}}"></script>
+  <link rel="stylesheet" href="{{abc-css-file}}">
+  <style>
+
+      :root {
+          --background-color: #ffffff;
+          --on-surface-color: #000000;
+          --stroke-color: #000000;
+          --highlight-color: #ff0000;
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      body, html {
+          display: block;
+          position: absolute;
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          overflow-x: hidden;
+      }
+
+      .abcjs-inline-audio {
+          display: none;
+      }
+
+      #paper {
+          margin-top: -40px;
+          width: 100%;
+          box-sizing: border-box;
+
+          background-color: var(--background-color);
+          color: var(--on-surface-color);
+
+          display: inline-block;
+          position: relative;
+          padding-bottom: 59.6378%;
+          vertical-align: middle;
+          overflow: visible;
+      }
+
+      .abcjs-cursor {
+          stroke: var(--stroke-color);
+      }
+
+      .highlight {
+          stroke: var(--highlight-color);
+          fill: var(--highlight-color);
+      }
+  </style>
+
+  <script type="text/javascript">
+    console.log = (msg) => {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ type: "LOG", data: msg }));
+    };
+
+    const abc = "{{abc}}";
+
+    if (window.ABCJS) {
+
+      function startAll() {
+        if (window.synthControl) {
+          window.synthControl.play();
+          console.log("Playing...");
+        }
+      }
+
+      window.startAll = startAll;
+
+      function seekTo(amount, units) {
+        console.log("Seeking to: " + amount + " " + units);
+        if (units === "percent")
+          window.synthControl.seek(parseFloat(amount) / 100, units);
+        else
+          window.synthControl.seek(amount, units);
+      }
+      window.seekTo = seekTo;
+
+      function CursorControl() {
+        var self = this;
+
+        self.onReady = function() {
+          console.log("ready");
+        };
+        self.onStart = function() {
+          var svg = document.querySelector("#paper svg");
+          var cursor = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          cursor.setAttribute("class", "abcjs-cursor");
+          cursor.setAttributeNS(null, "x1", 0);
+          cursor.setAttributeNS(null, "y1", 0);
+          cursor.setAttributeNS(null, "x2", 0);
+          cursor.setAttributeNS(null, "y2", 0);
+          svg.appendChild(cursor);
+        };
+        self.beatSubdivisions = 2;
+        self.onBeat = function(beatNumber, totalBeats, totalTime) {
+          // if (!self.beatDiv)
+          //   console.log("Beat: " + beatNumber + " Total: " + totalBeats + " Total time: " + totalTime);
+        };
+        self.onEvent = function(ev) {
+          console.log("on event");
+          if (ev.measureStart && ev.left === null)
+            return; // this was the second part of a tie across a measure line. Just ignore it.
+
+          var lastSelection = document.querySelectorAll("#paper svg .highlight");
+          for (var k = 0; k < lastSelection.length; k++)
+            lastSelection[k].classList.remove("highlight");
+
+          // console.log(JSON.stringify(ev, null, 4));
+          for (var i = 0; i < ev.elements.length; i++) {
+            var note = ev.elements[i];
+            for (var j = 0; j < note.length; j++) {
+              note[j].classList.add("highlight");
+            }
+          }
+
+          var cursor = document.querySelector("#paper svg .abcjs-cursor");
+          if (cursor) {
+            cursor.setAttribute("x1", ev.left - 2);
+            cursor.setAttribute("x2", ev.left - 2);
+            cursor.setAttribute("y1", ev.top);
+            cursor.setAttribute("y2", ev.top + ev.height);
+          }
+        };
+        self.onFinished = function() {
+          var els = document.querySelectorAll("svg .highlight");
+          for (var i = 0; i < els.length; i++) {
+            els[i].classList.remove("highlight");
+          }
+          var cursor = document.querySelector("#paper svg .abcjs-cursor");
+          if (cursor) {
+            cursor.setAttribute("x1", 0);
+            cursor.setAttribute("x2", 0);
+            cursor.setAttribute("y1", 0);
+            cursor.setAttribute("y2", 0);
+          }
+        };
+      }
+
+      var cursorControl = new CursorControl();
+
+      window.synthControl = null;
+
+      function debounce(func, wait) {
+        let timeout;
+
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
+
+      function clickListener(abcElem, tuneNumber, classes, analysis, drag, mouseEvent) {
+        console.log(mouseEvent)
+        console.log("click listener 1");
+        let current_track_mili = abcElem.currentTrackMilliseconds;
+        var output = "currentTrackMilliseconds: " + abcElem.currentTrackMilliseconds + "<br>" +
+          "currentTrackWholeNotes: " + abcElem.currentTrackWholeNotes + "<br>" +
+          "midiPitches: " + JSON.stringify(abcElem.midiPitches, null, 4) + "<br>" +
+          "gracenotes: " + JSON.stringify(abcElem.gracenotes, null, 4) + "<br>" +
+          "midiGraceNotePitches: " + JSON.stringify(abcElem.midiGraceNotePitches, null, 4) + "<br>";
+        console.log("click listener 2");
+        console.log(output)
+        console.log("current_track_mili " + current_track_mili);
+        // if current_track_mili is type list get first
+        if (Array.isArray(current_track_mili)) {
+          current_track_mili = current_track_mili[0];
+        }
+
+        let seconds = current_track_mili / 1000;
+        console.log("Seeking to: " + seconds + " seconds");
+        window.seekTo(seconds, "seconds");
+
+        // THIS ALLOWS ON CLICK PLAY -> something with the coloring
+        // var lastClicked = abcElem.midiPitches;
+        // if (!lastClicked)
+        //     return;
+
+        // window.ABCJS.synth.playEvent(lastClicked, abcElem.midiGraceNotePitches, synthControl.visualObj.millisecondsPerMeasure()).then(function (response) {
+        //     console.log("note played");
+        // }).catch(function (error) {
+        //     console.log("error playing note", error);
+        // });
+      }
+
+      const debouncedClickListener = debounce(clickListener, 50);
+
+      console.log("abcjs loaded successfully");
+      var renderOptions = {
+        wrap: { minSpacing: 1.8, maxSpacing: 2.7, preferredMeasuresPerLine: 4 },
+        staffwidth: "{{zoom}}",
+        // staffwidth: 620,
+        responsive: "resize",
+        germanAlphabet: true,
+        textboxpadding: 0,
+        foregroundColor: "{{foregroundColor}}",
+        visualTranspose: "{{visualTranspose}}",
+        add_classes: true,
+        clickListener: debouncedClickListener,
+        // tablature: [{
+        //   instrument: "guitar",
+        //   tuning: ["E,", "A,", "D", "G", "B", "e"],
+        // }],
+        // format: {
+        //     tablabelfont: "Helvetica 16 box",
+        //     tabnumberfont: "Times 12"
+        // }
+      };
+
+
+      function load() {
+        if (ABCJS.synth.supportsAudio()) {
+          window.synthControl = new ABCJS.synth.SynthController();
+          window.synthControl.load("#audio", cursorControl, {
+            displayLoop: true,
+            displayRestart: true,
+            displayPlay: true,
+            displayProgress: true,
+            displayWarp: true,
+          });
+        } else {
+
+        }
+        setTune(true);
+      }
+
+      function setTune(userAction) {
+
+        console.log("TODO disable seek controls");
+        window.synthControl.disable(true);
+        var visualObj = ABCJS.renderAbc("paper", abc, renderOptions)[0];
+
+        var newAudioContext = new AudioContext();
+
+        // TODO-PER: This will allow the callback function to have access to timing info - this should be incorporated into the render at some point.
+        window.midiBuffer = new ABCJS.synth.CreateSynth();
+        const audioParams = {
+          audioContext: newAudioContext,
+          visualObj: visualObj,
+          // sequence: [],
+          // millisecondsPerMeasure: 1000,
+          // debugCallback: function(message) { console.log(message) },
+          options: {
+            soundFontUrl: "https://paulrosen.github.io/midi-js-soundfonts/FluidR3_GM/" ,
+            // sequenceCallback: function(noteMapTracks, callbackContext) { return noteMapTracks; },
+            // callbackContext: this,
+            // onEnded: function(callbackContext),
+            // pan: [ -0.5, 0.5 ],
+            program: "{{program}}",
+            qpm: "{{qpm}}",
+            midiTranspose: "{{midiTranspose}}",
+          },
+        };
+        window.midiBuffer.init(audioParams).then(function(response) {
+          setTimeout(() => {
+            const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+            window.ReactNativeWebView.postMessage(JSON.stringify({type: 'SET_HEIGHT', height: height}));
+          }, 20);
+          // console.log(response);
+          if (window.synthControl) {
+            window.synthControl.setTune(visualObj, userAction, audioParams.options).then(function(response) {
+              console.log("Audio successfully loaded.");
+              console.log("TODO seek ENABLE controls");
+            }).catch(function(error) {
+              console.warn("Audio problem:", error);
+            });
+          }
+
+          return window.midiBuffer.prime().then((response) => {
+            console.log(response);
+          }).catch((error) => {
+            console.warn("Audio problem:", error);
+          });
+        }).catch(function(error) {
+          console.warn("Audio problem:", error);
+        });
+      }
+    } else {
+      console.log("abcjs not loaded");
+    }
+  </script>
+</head>
+
+<body id="body" onload="load()">
+<div id="paper" class="paper"></div>
+<div id="audio"></div>
+</body>
+
+</html>

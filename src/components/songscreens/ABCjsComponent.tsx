@@ -9,51 +9,46 @@ import {WebView} from 'react-native-webview';
 import {StyleSheet, View} from 'react-native';
 import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
 import {useSelector} from 'react-redux';
+
 import {RootState} from '../../store/store.ts';
-import {selectIndividualSongSetting} from '../../hooks/useSettings.ts';
+import RNFS from 'react-native-fs';
+import {makeSelectIndividualSongSetting} from '../../hooks/useSettings.ts';
 
 // define props
 interface ABCjsComponentProps {
   songId: string;
   abcNotation: string;
-  millisecondsPerMeasure?: number;
+  qpm?: number;
   zoom?: number;
   transposeStep?: number;
 }
 
 export interface ABCjsComponentRef {
-  playABC: () => void;
-  pauseABC: () => void;
+  toggleABC: () => void;
 }
 
 const ABCjsComponent = forwardRef<ABCjsComponentRef, ABCjsComponentProps>(
-  ({songId, abcNotation, millisecondsPerMeasure, zoom, transposeStep}, ref) => {
+  ({songId, abcNotation, qpm, zoom, transposeStep}, ref) => {
     const theme = useThemeSelection();
     const webViewRef = useRef<WebView>(null);
     const [webviewHeight, setWebviewHeight] = useState<number>(100);
 
-    const songSettings = useSelector((state: RootState) =>
+    const selectIndividualSongSetting = makeSelectIndividualSongSetting();
+    const individualSongSetting = useSelector((state: RootState) =>
       selectIndividualSongSetting(state.settings, songId),
     );
 
     // check if tempo is defined in abcNotation
     transposeStep = transposeStep || 0;
-    if (abcNotation.includes('Q:') && !millisecondsPerMeasure) {
-      millisecondsPerMeasure = 2000;
-    }
-    millisecondsPerMeasure = 2000;
-    zoom = zoom || 420;
+    // if (abcNotation.includes('Q:') && !millisecondsPerMeasure) {
+    //   millisecondsPerMeasure = 1000;
+    // }
+    zoom = zoom || 620;
 
     useImperativeHandle(ref, () => ({
-      playABC() {
+      toggleABC() {
         webViewRef.current?.injectJavaScript(`
-          window.synth.start();
-          true; // Note: ending with 'true' to avoid warning messages
-        `);
-      },
-      pauseABC() {
-        webViewRef.current?.injectJavaScript(`
-          window.synth.pause();
+          window.startAll();
           true; // Note: ending with 'true' to avoid warning messages
         `);
       },
@@ -64,136 +59,58 @@ const ABCjsComponent = forwardRef<ABCjsComponentRef, ABCjsComponentProps>(
       setWebviewHeight(100); // Reset to default or minimum height before content is loaded
     }, [abcNotation]);
 
-    const htmlContent = `
-      <html lang="html">
-        <head> 
-          <title id="title">ABCjs</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <link rel="stylesheet" href="file:///android_asset/abcjs-audio.css">
-          <script src="file:///android_asset/abcjs-min.js"></script>
-          <style>
-            * {
-                box-sizing: border-box;
-            }
-            body, html {
-              display: block;
-              position: absolute;
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              overflow-x: hidden; /* Prevent horizontal scrolling */
-            }
-            #abc {
-              margin-top: -40px;
-              width: 100%; /* Use 100% of the container's width */
-              box-sizing: border-box; /* Include padding and border in the element's width */
-              /*border: 5px solid red;*/
-              background-color: ${theme.colors.surface};
-              color: ${theme.colors.onSurface};
-              display: inline-block;
-              position: relative;
-              padding-bottom: 59.6378%;
-              vertical-align: middle;
-              overflow: hidden;
-            }
-            .abcjs-title {
-               display: none; 
-               height: 0;
-            }
-            .abcjs-cursor {
-              stroke: ${theme.colors.onSurface}d
-            }
-            path {
-              transition: opacity 1s;
-            }
-            .abcjs-note.hidden, .abcjs-beam-elem.hidden {
-              opacity: 0;
-            }
-            .color {
-              stroke: red;
-              fill: red;
-            }
-          </style>
-        </head>
-        <body id="body">
-            <div id="abc"></div>
-            <div id="audio"></div>
-          <div id="output" style="font-size: 30px; position: fixed; top: 0; right: 0; color: ${theme.colors.primary}"></div>
-          <script type="text/javascript">
-            console.log = (msg) => {
-              window.ReactNativeWebView.postMessage(JSON.stringify({type: 'LOG', data: msg}));
-            };
-                      
-            if (window.ABCJS) {
-              console.log('abcjs loaded successfully');
-              var renderOptions = {
-                wrap: { minSpacing: 1, maxSpacing: 4, preferredMeasuresPerLine: 4 },
-                staffwidth : ${zoom},
-                responsive: "resize",
-                germanAlphabet: true,
-                textboxpadding: 0,
-                foregroundColor: "${theme.colors.onSurface}",
-                visualTranspose: ${transposeStep},
-                add_classes: true,
-                // tablature: [{
-                //   instrument: "guitar",
-                //   tuning: ["E,", "A,", "D", "G", "B", "e"],
-                // }],
-                // format: {
-                //     tablabelfont: "Helvetica 16 box",
-                //     tabnumberfont: "Times 12"
-                // }
-              }
-              
-              function beatCallback(beatNumber, totalBeats, totalTime, position, debugInfo) {
-                console.log('beatCallback: ' + beatNumber + '/' + totalBeats + ' - ' + totalTime + ' - ' + position)
-              }
-              const timingOptions = {
-                beatCallback: beatCallback,
-                qpm: 60,
-              };
-              
-              var visualObj = window.ABCJS.renderAbc("abc", "${abcNotation}", renderOptions);
-              setTimeout(() => {
-                const height = document.documentElement.scrollHeight || document.body.scrollHeight;
-                window.ReactNativeWebView.postMessage(JSON.stringify({type: 'SET_HEIGHT', height: height}));
-              })
-              
-              var myContext = new AudioContext();
-              
-              window.synth = new window.ABCJS.synth.CreateSynth();
-              console.log('Synth created');
-              
-              window.synth.init({
-                  audioContext: myContext,
-                  visualObj: visualObj[0],
-                  millisecondsPerMeasure: ${millisecondsPerMeasure},
-                  options: {
-                      soundFontUrl: "https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
-                      program: ${songSettings.musicInstrumentId},
-                      pan: [ -0.3, 0.3 ],
-                      midiTranspose: ${transposeStep},
-                  }
-              }).then(function (results) {
-                  window.synth.prime().then((response) => {
-                    console.log('Synth primed');
-                  });
-              }).catch(function (reason) {
-                  console.log('Synth failed:', reason);
-              });
-            } else {
-              console.log('abcjs not loaded');
-            }
-        </script>
-        </body>
-      </html>
-    `;
+    const [htmlContent, setHtmlContent] = useState('');
+
+    useEffect(() => {
+      // TODO IOS Adjust the path according to where you've stored your HTML file
+      const filePath = 'abcjs_webview.html';
+
+      // Read the content of the HTML file
+      RNFS.readFileAssets(filePath, 'utf8')
+        .then((content: React.SetStateAction<string>) => {
+          const replacements: Record<string, any> = {
+            '{{abc-js-file}}': 'file:///android_asset/abcjs-min.js', // TODO IOS Adjust for iOS
+            '{{abc-css-file}}': 'file:///android_asset/abcjs-audio.css', // TODO IOS Adjust for iOS
+            '--background-color: #ffffff;': `--background-color: ${theme.colors.surface};`,
+            '--on-surface-color: #000000;': `--on-surface-color: ${theme.colors.surface};`,
+            '--stroke-color: #000000;': `--stroke-color: ${theme.colors.onSurface};`,
+            '--highlight-color: #ff0000;': `--highlight-color: ${theme.colors.primary};`,
+            '"{{abc}}"': `'${abcNotation}'`,
+            '"{{zoom}}"': `${zoom}`,
+            '"{{qpm}}"': `${qpm || 120}`,
+            '"{{program}}"': `${individualSongSetting.musicInstrumentId}`,
+            '"{{visualTranspose}}"': `${transposeStep}`,
+            '"{{midiTranspose}}"': `${transposeStep}`,
+            '{{foregroundColor}}': `${theme.colors.onSurface}`,
+          };
+
+          let html = content.toString();
+          Object.keys(replacements).forEach(key => {
+            html = html.replace(new RegExp(key, 'g'), replacements[key]);
+          });
+
+          // Set the content to the state variable
+          setHtmlContent(html);
+        })
+        .catch((err: any) => {
+          console.error('Error reading HTML file:', err);
+        });
+    }, [
+      abcNotation,
+      qpm,
+      individualSongSetting.musicInstrumentId,
+      theme.colors.onSurface,
+      theme.colors.primary,
+      theme.colors.surface,
+      transposeStep,
+      zoom,
+    ]);
 
     const handleWebViewMessage = (event: any) => {
       try {
         const message = JSON.parse(event.nativeEvent.data);
-        console.log('Received message from webview:', message);
         if (message.type === 'SET_HEIGHT') {
+          console.log('Received message from webview:', message);
           setWebviewHeight(message.height); // Adjust webview height based on content height
         }
         if (message.type === 'LOG') {
@@ -210,10 +127,10 @@ const ABCjsComponent = forwardRef<ABCjsComponentRef, ABCjsComponentProps>(
         <WebView
           ref={webViewRef}
           originWhitelist={['*']}
-          source={{html: htmlContent}}
+          source={{html: htmlContent || '<p>Loading...</p>'}}
           javaScriptEnabled={true}
           onMessage={handleWebViewMessage}
-          style={{...styles.container, backgroundColor: theme.colors.surface}}
+          style={{...styles.container}}
         />
       </View>
     );

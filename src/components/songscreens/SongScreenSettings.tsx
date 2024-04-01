@@ -1,15 +1,22 @@
 import React, {useState} from 'react';
 import Modal from 'react-native-modal';
-import {FAB, Text, TextInput, Portal} from 'react-native-paper';
+import {FAB, TextInput, Portal} from 'react-native-paper';
 import {StyleSheet, View} from 'react-native';
 import {useThemeSelection} from '../../hooks/useThemeSelection.ts';
 import BottomDrawer from '../bits/BottomDrawer.tsx';
 import {useSelector} from 'react-redux';
 import {RootState} from '../../store/store.ts';
 import MidiInstrumentsList from './songsettingcomponents/MidiInstrumentsList.tsx';
-import {selectIndividualSongSetting} from '../../hooks/useSettings.ts';
+import {
+  makeSelectIndividualSongSetting,
+  selectAbcExample,
+} from '../../hooks/useSettings.ts';
 import {useAppDispatch} from '../../store/hooks.ts';
-import {saveIndividualSongSetting} from '../../store/features/settingsSlice.ts';
+import {
+  saveIndividualSongSetting,
+  setAbcExample,
+} from '../../store/features/settingsSlice.ts';
+import DropDown from '../bits/DropDown.tsx';
 
 type Props = {
   songId: string;
@@ -25,7 +32,8 @@ const SongScreenSettings = ({songId, reRender}: Props) => {
   const dispatch = useAppDispatch();
   const theme = useThemeSelection();
   const [visible, setModalVisibility] = useState<boolean>(false);
-  let songSettings = useSelector((state: RootState) =>
+  const selectIndividualSongSetting = makeSelectIndividualSongSetting();
+  const individualSongSetting = useSelector((state: RootState) =>
     selectIndividualSongSetting(state.settings, songId),
   );
   const handleSave = (settings: Setting[]) => {
@@ -45,9 +53,32 @@ const SongScreenSettings = ({songId, reRender}: Props) => {
     );
   };
 
-  console.log(songSettings);
   const [instrumentModalVisible, setInstrumentModalVisible] =
     React.useState(false);
+
+  const [showABCExampleDropdown, setShowABCExampleDropdown] = useState(false);
+
+  const abcExample = useSelector((state: RootState) =>
+    selectAbcExample(state.settings),
+  );
+  const handleSetAbcExample = (
+    mode:
+      | 'orig'
+      | 'abcExample1'
+      | 'abcWithText'
+      | 'abcHappyBirthday'
+      | 'exportStandAllein',
+  ) => {
+    dispatch(setAbcExample(mode));
+  };
+
+  const abcExampleViewMode = [
+    {label: 'Original', value: 'orig'},
+    {label: 'Example 1', value: 'abcExample1'},
+    {label: 'With Text', value: 'abcWithText'},
+    {label: 'Happy Birthday', value: 'abcHappyBirthday'},
+    {label: 'Stand Allein', value: 'exportStandAllein'},
+  ];
 
   return (
     <View>
@@ -64,9 +95,12 @@ const SongScreenSettings = ({songId, reRender}: Props) => {
         <View style={styles.container}>
           <TextInput
             label={'Instrument'}
-            value={songSettings.musicInstrumentName}
+            value={individualSongSetting.musicInstrumentName}
             editable={false}
             mode={'outlined'}
+            style={{
+              marginBottom: 20,
+            }}
             right={
               <TextInput.Icon
                 icon="pencil"
@@ -99,8 +133,21 @@ const SongScreenSettings = ({songId, reRender}: Props) => {
               />
             </Modal>
           </Portal>
-          <Text>{JSON.stringify(songSettings)}</Text>
           {/*// select instrument*/}
+
+          <DropDown
+            label={'ABC Example'}
+            mode={'outlined'}
+            visible={showABCExampleDropdown}
+            showDropDown={() => setShowABCExampleDropdown(true)}
+            onDismiss={() => setShowABCExampleDropdown(false)}
+            value={abcExample}
+            setValue={handleSetAbcExample}
+            list={abcExampleViewMode}
+            dropDownStyle={{
+              borderColor: theme.colors.onBackground,
+            }}
+          />
         </View>
       </BottomDrawer>
     </View>
@@ -114,8 +161,8 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     margin: 16,
-    right: 0,
-    bottom: 0,
+    right: 10,
+    bottom: 75,
   },
 });
 
