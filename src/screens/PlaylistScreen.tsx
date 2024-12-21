@@ -2,7 +2,7 @@ import React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/types';
-import {Appbar, List} from 'react-native-paper';
+import {Appbar, List, Text} from 'react-native-paper';
 import {useSelector, useDispatch} from 'react-redux';
 import {RootState, AppDispatch} from '../store/store';
 // Import the actions you need from the playlistSlice
@@ -26,6 +26,15 @@ function PlaylistScreen({navigation}: Props) {
     dispatch(removePlaylist(playlistId));
   };
 
+  const renderEmptyState = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={styles.emptyText}>
+        Du hast noch keine Playlists erstellt.
+      </Text>
+      <Text>Erstelle eine neue Playlist mit dem + Button unten.</Text>
+    </View>
+  );
+
   return (
     <View
       style={{
@@ -37,26 +46,28 @@ function PlaylistScreen({navigation}: Props) {
         <Appbar.Content title="Playlists" />
       </Appbar.Header>
       <ScrollView>
-        {playlists.map((playlist, index) => (
-          <List.Item
-            key={index}
-            title={playlist.name}
-            description={`Anzahl der Songs: ${playlist.songs.length}`}
-            onPress={() =>
-              navigation.navigate('PlaylistDetailScreen', {
-                playlistId: playlist.id,
-              })
-            }
-            left={props => <List.Icon {...props} icon="playlist-music" />}
-            right={() => (
-              <PlaylistDeleteButton
-                handlePlaylistDelete={handlePlaylistDelete}
-                playlistId={playlist.id}
-                playlistName={playlist.name}
+        {playlists.length === 0
+          ? renderEmptyState()
+          : playlists.map((playlist, index) => (
+              <List.Item
+                key={index}
+                title={playlist.name}
+                description={`Anzahl der Songs: ${playlist.songIds.length}`} // Changed from songs to songIds
+                onPress={() =>
+                  navigation.navigate('PlaylistDetailScreen', {
+                    playlistId: playlist.id,
+                  })
+                }
+                left={props => <List.Icon {...props} icon="playlist-music" />}
+                right={() => (
+                  <PlaylistDeleteButton
+                    handlePlaylistDelete={handlePlaylistDelete}
+                    playlistId={playlist.id}
+                    playlistName={playlist.name}
+                  />
+                )}
               />
-            )}
-          />
-        ))}
+            ))}
       </ScrollView>
       <CreatePlaylistComponent />
     </View>
@@ -66,6 +77,17 @@ function PlaylistScreen({navigation}: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    marginTop: 40,
+  },
+  emptyText: {
+    fontSize: 18,
+    marginBottom: 10,
   },
   fab: {
     position: 'absolute',

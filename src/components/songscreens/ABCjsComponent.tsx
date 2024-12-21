@@ -110,11 +110,10 @@ const ABCjsComponent = forwardRef<ABCjsComponentRef, ABCjsComponentProps>(
       try {
         const message = JSON.parse(event.nativeEvent.data);
         if (message.type === 'SET_HEIGHT') {
-          console.log('Received message from webview:', message);
           setWebviewHeight(message.height); // Adjust webview height based on content height
         }
         if (message.type === 'LOG') {
-          console.log('Message from webview:', message.data);
+          // console.log('Message from webview:', message.data);
         }
       } catch (error) {
         console.log('Failed to parse message from webview:', error);
