@@ -6,7 +6,7 @@ export interface Schema {
   gesangbuchlied: Gesangbuchlied[];
 }
 
-export const directus_url = 'https://gb26-admin.johannische-kirche.org';
+export const directus_url = Config.DIRECTUS_URL as string;
 
 // Client with GraphQL support
 const directus = createDirectus<Schema>(directus_url)

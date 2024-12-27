@@ -1,84 +1,101 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# GB-App Prototype
 
-# Getting Started
+A modern, mobile-friendly digital hymnal application built with React Native. 
+This app serves as a companion to the GB Dashboard web application, bringing the music to the mobile device with interactive features and MIDI playback capabilities using [ABCjs](https://github.com/paulrosen/abcjs).
 
-> **Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+![MobilePreview](https://github.com/user-attachments/assets/f04df895-e68d-40ec-a733-3c7a2958223c)
 
-## Step 1: Start the Metro Server
+## Features
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+- Browse and search through the list of hymns (only the one you uploaded.)
+- View sheet music with clear, readable notation
+- Play back songs using high-quality MIDI instruments
+- Customizable instrument selection (piano, organ, strings, and more)
+- Create and manage personal playlists
+- Dark mode support for comfortable viewing
+- Offline access to hymns and sheet music
 
-To start Metro, run the following command from the _root_ of your React Native project:
+![Features](https://github.com/user-attachments/assets/95e425a0-e3a2-4b71-a3eb-d586a1a6b42f)
 
+## Getting Started
+
+### Prerequisites
+
+You do require the directus server from the [GB Dashboard](https://github.com/Blaxzter/gb-dashboard) to be running to use this app combined with uploaded data.
+Otherwise you'd need a directus server with the same data structure as the GB Dashboard as shown  in [thunk.tsx](src%2Fstore%2Fqueries%2Fthunk.tsx)
+
+You will need the following tools to run this app (from the [React Native CLI Quickstart](https://reactnative.dev/docs/environment-setup)):
+- Node.js 16 or newer
+- Java Development Kit (JDK) 11 or newer
+- Android Studio and Android SDK for Android development
+- Xcode (Mac only) for iOS development
+- React Native CLI
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Blaxzter/gb-app
+   cd gb-app
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Install iOS dependencies (Mac only):
+   ```bash
+   cd ios
+   pod install
+   cd ..
+   ```
+
+### Running the App
+
+#### Start the Metro Bundler:
 ```bash
-# using npm
 npm start
-
-# OR using Yarn
+# or
 yarn start
 ```
 
-## Step 2: Start your Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
-
+#### Run on Android:
 ```bash
-# using npm
 npm run android
-
-# OR using Yarn
+# or
 yarn android
 ```
 
-### For iOS
-
+#### Run on iOS (Mac only):
 ```bash
-# using npm
 npm run ios
-
-# OR using Yarn
+# or
 yarn ios
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+## Development
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+### Project Structure
+```
+gb-app/
+├── src/
+│   ├── components/    # Reusable UI components
+│   ├── screens/       # Screen components
+│   ├── navigation/    # Navigation configuration
+│   ├── services/      # API and MIDI services
+│   └── assets/        # Images, fonts, and other static files
+├── android/          # Android-specific files
+└── ios/             # iOS-specific files
+```
 
-## Step 3: Modifying your App
+## Related Projects
 
-Now that you have successfully run the app, let's modify it.
+This mobile app works in conjunction with the [GB Dashboard](https://github.com/Blaxzter/gb-dashboard), a web-based management system for the Johannische Kirche hymnal.
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+## License
 
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
-
-# stuff to do for ios
-
-- add assets: https://www.npmjs.com/package/@dr.pogodin/react-native-static-server
-- icon font stuff: https://github.com/oblador/react-native-vector-icons?tab=readme-ov-file
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

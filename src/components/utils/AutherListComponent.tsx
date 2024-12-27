@@ -1,4 +1,4 @@
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {TextType, MelodieType} from '../../types/modeltypes.ts';
 import IconTextListComponent from '../bits/IconTextListComponent.tsx';
@@ -6,9 +6,10 @@ import IconTextListComponent from '../bits/IconTextListComponent.tsx';
 type Props = {
   text: TextType;
   melodie: MelodieType;
+  inline?: boolean;
 };
 
-const AuthorListComponent = ({text, melodie}: Props) => {
+const AuthorListComponent = ({text, melodie, inline = false}: Props) => {
   const textAuthorNames = text?.autorId?.map(autor => {
     return autor.autor_id.vorname + ' ' + autor.autor_id.nachname;
   });
@@ -18,7 +19,7 @@ const AuthorListComponent = ({text, melodie}: Props) => {
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, inline && styles.inlineContainer]}>
       {textAuthorNames && textAuthorNames.length > 0 && (
         <IconTextListComponent
           content={textAuthorNames}
@@ -28,6 +29,9 @@ const AuthorListComponent = ({text, melodie}: Props) => {
         />
       )}
 
+      {/* If inline add a dot */}
+      {inline && <Text> • </Text>}
+
       {melodieAuthorNames && melodieAuthorNames.length > 0 && (
         <IconTextListComponent
           content={melodieAuthorNames}
@@ -36,35 +40,19 @@ const AuthorListComponent = ({text, melodie}: Props) => {
           seperator={','}
         />
       )}
-
-      {/*{text &&*/}
-      {/*  text?.autorId?.map(autor => (*/}
-      {/*    <View style={styles.authorRow} key={autor.autor_id.nachname}>*/}
-      {/*      <Icon source="text" size={20} />*/}
-      {/*      <Text variant="bodyMedium">*/}
-      {/*        {autor.autor_id.vorname + ' ' + autor.autor_id.nachname}*/}
-      {/*      </Text>*/}
-      {/*    </View>*/}
-      {/*  ))}*/}
-
-      {/*{melodie &&*/}
-      {/*  melodie?.autorId?.map(autor => (*/}
-      {/*    <View style={styles.authorRow} key={autor.autor_id.nachname}>*/}
-      {/*      <Icon source="music" size={20} />*/}
-      {/*      <Text variant="bodyMedium">*/}
-      {/*        {autor.autor_id.vorname + ' ' + autor.autor_id.nachname}*/}
-      {/*      </Text>*/}
-      {/*    </View>*/}
-      {/*  ))}*/}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'column',
     gap: 5,
+  },
+  inlineContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
   },
   authorRow: {
     flexDirection: 'row',

@@ -3,7 +3,6 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/types.ts';
 import {Appbar, Switch, Text} from 'react-native-paper';
 import {
-  setAbcExample,
   setSongViewSettings,
   toggleTheme,
 } from '../store/features/settingsSlice.ts';
@@ -12,10 +11,7 @@ import {AppDispatch, RootState} from '../store/store.ts';
 import {StyleSheet, View} from 'react-native';
 import {darkTheme, lightTheme} from '../assets/styles/themes.ts';
 import DropDown from '../components/bits/DropDown.tsx';
-import {
-  selectAbcExample,
-  selectSongViewSettings,
-} from '../hooks/useSettings.ts';
+import {selectSongViewSettings} from '../hooks/useSettings.ts';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SettingsScreen'>;
 

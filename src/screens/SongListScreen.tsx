@@ -3,20 +3,19 @@ import {useState} from 'react';
 
 import _ from 'lodash';
 
-import {View, StyleSheet, FlatList} from 'react-native';
+import {View, StyleSheet, FlatList, Pressable} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/types.ts';
-import {TouchableRipple, Divider, Appbar} from 'react-native-paper';
+import {Divider} from 'react-native-paper';
 import BottomDrawer from '../components/bits/BottomDrawer.tsx';
 import {useAppSelector} from '../store/hooks.ts';
 import LiedListEntry from '../components/songlistcomponents/LiedListEntry.tsx';
 import {Gesangbuchlied} from '../types/modeltypes.ts';
 import SongListSearchAppBar from '../components/songlistcomponents/SongListSearchAppBar.tsx';
-import {useSelector, useDispatch} from 'react-redux';
+import {useSelector} from 'react-redux';
 import {RootState} from '../store/store.ts';
 import {darkTheme, lightTheme} from '../assets/styles/themes.ts';
-import {addSongsToPlaylists} from '../store/features/playlistSlice';
-import SelectPlaylistComponent from '../components/playlistcomponents/SelectPlaylistComponent';
+import SongMenuComponent from '../components/songlistcomponents/SongMenuComponent';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SongListScreen'>;
 
@@ -28,10 +27,8 @@ function SongListScreen({navigation}: Props) {
   // State to hold selected categories
   const [selectedCategories, setSelectedCategories] = useState<string>('');
   const [hasABC, setHasABC] = useState<boolean>(false);
-  const [isSelectMode, setIsSelectMode] = useState(false);
-  const [selectedSongs, setSelectedSongs] = useState<Set<string>>(new Set());
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const dispatch = useDispatch();
+  const [selectedSong, setSelectedSong] = useState<Gesangbuchlied | null>(null);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   // Callback function to update selected categories
   const handleCategoriesChange = (newCategories: string) => {
@@ -42,50 +39,10 @@ function SongListScreen({navigation}: Props) {
     setHasABC(newHasABC);
   };
 
-  const toggleSelectMode = () => {
-    setIsSelectMode(!isSelectMode);
-    setSelectedSongs(new Set());
+  const showSongMenu = (song: Gesangbuchlied) => {
+    setSelectedSong(song);
+    setIsMenuVisible(true);
   };
-
-  const toggleSongSelection = (songId: string) => {
-    setSelectedSongs(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(songId)) {
-        newSet.delete(songId);
-      } else {
-        newSet.add(songId);
-      }
-      if (newSet.size === 0) {
-        setIsSelectMode(false);
-      }
-      return newSet;
-    });
-  };
-
-  const handleAddToPlaylists = (selectedPlaylistIds: string[]) => {
-    const selectedSongIds = Array.from(selectedSongs);
-    dispatch(
-      addSongsToPlaylists({
-        playlistIds: selectedPlaylistIds,
-        songIds: selectedSongIds,
-      }),
-    );
-    setIsModalVisible(false);
-    toggleSelectMode();
-  };
-
-  const renderSelectionHeader = () => (
-    <Appbar.Header>
-      <Appbar.Action icon="close" onPress={toggleSelectMode} />
-      <Appbar.Content title={`${selectedSongs.size} ausgewählt`} />
-      {selectedSongs.size > 0 && (
-        <Appbar.Action
-          icon="playlist-plus"
-          onPress={() => setIsModalVisible(true)}
-        />
-      )}
-    </Appbar.Header>
-  );
 
   const data = useAppSelector(state => state.gbData.data);
 
@@ -126,53 +83,43 @@ function SongListScreen({navigation}: Props) {
     <View
       style={{...styles.container, backgroundColor: theme.colors.background}}>
       <BottomDrawer
-        visible={isModalVisible}
-        hideModal={() => setIsModalVisible(false)}
+        visible={isMenuVisible}
+        hideModal={() => setIsMenuVisible(false)}
         theme={theme}>
-        <SelectPlaylistComponent
-          onCancel={() => setIsModalVisible(false)}
-          onConfirm={handleAddToPlaylists}
-        />
+        {selectedSong && (
+          <SongMenuComponent
+            song={selectedSong}
+            onClose={() => setIsMenuVisible(false)}
+            onNavigateToSong={() => {
+              setIsMenuVisible(false);
+              navigation.navigate('SongScreen', {lied: selectedSong});
+            }}
+          />
+        )}
       </BottomDrawer>
-      {isSelectMode ? (
-        renderSelectionHeader()
-      ) : (
-        <SongListSearchAppBar
-          amountOfSongs={filteredSongs?.length}
-          searchQuery={searchQuery}
-          onSearchQueryChange={handleSearchQueryChange}
-          onCategoriesChange={handleCategoriesChange}
-          onABCChange={handleABCChange}
-        />
-      )}
+      <SongListSearchAppBar
+        amountOfSongs={filteredSongs?.length}
+        searchQuery={searchQuery}
+        onSearchQueryChange={handleSearchQueryChange}
+        onCategoriesChange={handleCategoriesChange}
+        onABCChange={handleABCChange}
+      />
       <View>
         {data && (
           <FlatList
             data={filteredSongs}
             renderItem={({item, index}) => (
               <View>
-                <TouchableRipple
+                <Pressable
                   style={styles.songListEntry}
-                  onPress={() => {
-                    if (isSelectMode) {
-                      toggleSongSelection(item.id.toString());
-                    } else {
-                      navigation.navigate('SongScreen', {lied: item});
-                    }
-                  }}
-                  onLongPress={() => {
-                    if (!isSelectMode) {
-                      setIsSelectMode(true);
-                      toggleSongSelection(item.id.toString());
-                    }
-                  }}>
-                  <LiedListEntry
-                    lied={item}
-                    index={index}
-                    isSelectMode={isSelectMode}
-                    isSelected={selectedSongs.has(item.id.toString())}
-                  />
-                </TouchableRipple>
+                  onPress={() =>
+                    navigation.navigate('SongScreen', {lied: item})
+                  }
+                  android_ripple={{color: theme.colors.surfaceVariant}}
+                  delayLongPress={200}
+                  onLongPress={() => showSongMenu(item)}>
+                  <LiedListEntry lied={item} index={index} />
+                </Pressable>
                 <Divider horizontalInset />
               </View>
             )}
